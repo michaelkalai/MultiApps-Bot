@@ -26,3 +26,5 @@ except discord.HTTPException as e:
         print("Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests")
     else:
         raise e
+
+# test
