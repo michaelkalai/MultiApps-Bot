@@ -12,18 +12,6 @@ def run_bot():
     async def on_ready():
         print(f"{bot.user} is online")
 
-    # @bot.event
-    # async def on_message(message):
-    #     if message.author != bot.user:
-    #         objects.append(message)
-    #         print(message.content)
-    #     # elif message.author in objects:
-    #     #     objects[message.author].append(message)
-    #     if message.content == "hello":
-    #         await message.channel.send(
-    #             "pies are better than cakes. change my mind.")
-    #     await bot.process_commands(message)
-    #     print(message.author)
 
     @bot.command()
     async def hello(ctx):
