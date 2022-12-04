@@ -151,22 +151,24 @@ def run_bot():
 
     #'''
 
-    # VC Person Picker
-    # @bot.command()
-    # async def vcPicker(ctx):
-    #   def check(msg):
-    #         return msg.author == ctx.author and msg.channel == ctx.channel
+    #VC Person Picker
+    @bot.command()
+    async def vcPicker(ctx, *, given_name=None):
+        for channel in ctx.guild.channels:
+            if channel.name == given_name:
+                wanted_channel_id = channel.id
 
-    #   msg = await bot.wait_for("message", check=check)
-    #   name = msg.content
-    #   channel = discord.utils.find(lambda c: c.name == name and c.type == 'voice', some_list_of_channels)
-    #   if channel is not None:
-    #     print(channel.id)
-    #   # Loops Names in Channel
+        # Loops Names in Channel
+        voice_channel = bot.get_channel(wanted_channel_id)
+        member_ids = list(voice_channel.voice_states.keys())
 
-    #   # Chooses Random Name
+        # Chooses Random Name
+        vcPicked = random.choice(member_ids)
+      
+        # Prints Name to Chat
+        await ctx.send("You have bee selected from: " + given_name + "! " +
+                       "<@" + str(vcPicked) + ">")
 
-    #   # Prints Name to Chat
     @bot.command()
     async def get_channel(ctx, *, given_name=None):
         for channel in ctx.guild.channels:
