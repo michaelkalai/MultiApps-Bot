@@ -1,7 +1,3 @@
-import discord
-from discord.ext import commands
-import random
-
 class Connect_Four():
   def __init__(self, bot, user1, user2):
     self.bot = bot
@@ -19,17 +15,16 @@ class Connect_Four():
     ]
 
   def display_board(self):
-    temp_board = []
-    temp_board.append(self.board)
-    temp_board[0].reverse()
-    return temp_board[0]
+    for row in self.board:
+      print(row)
   
   def insert_chip(self, chip, col):
     self.board.reverse()
     for row in self.board:
       if row[col] == '-':
         row[col] = chip
-    self.board.reverse
+        break
+    self.board.reverse()
 
   def has_space(self, col):
     for row in range(self.rows):
@@ -39,56 +34,61 @@ class Connect_Four():
   
   def check_cols(self, chip):
     for col in range(self.cols):
-      count = 0
-      for row in range(self.rows):
-        if count == 4:
-          return True
-        elif self.board[row][col] == chip:
-          count += 1
-        else:
-          count = 0
+        count = 0
+        for row in range(self.rows):
+            if count == 4:
+                return True
+            elif self.board[row][col] == chip:
+                count += 1
+            else:
+                count = 0
+    return False
 
   def check_rows(self, chip):
-    for row in range(self.rows):
-      count = 0
-      for col in range(self.cols):
-        if count == 4:
-          return True
-        elif self.board[row][col] == chip:
-          count += 1
-        else:
+      for row in range(self.rows):
           count = 0
-          
-  def check_diagnols(self, chip):
-    for i in range(self.rows - 4):
-      count = 0
-      row = i
-      col = 0
-      for x in range(self.cols):
-        if count == 4:
-          return True
-        elif self.board[row][col] == chip:
-          count += 1
-          row += 1
-          col += 1
-        else:
-          break
-    for i in range(4, self.rows):
-      count = 0
-      row = i
-      col = 0
-      for x in range(self.cols):
-        if count == 4:
-          return True
-        elif self.board[row][col] == chip:
-          count += 1
-          row -= 1
-          col += 1
-        else:
-          break
+          for col in range(self.cols):
+              if count == 4:
+                  return True
+              elif self.board[row][col] == chip:
+                  count += 1
+              else:
+                  count = 0
+      return False
 
-  def check_winner(self):
-    if self.check_cols or self.check_rows or self.check_diagnols:
+  def check_diagnols(self, chip):
+      for k in range(0, self.cols - 3):
+          for i in range(0, self.rows - 3):
+              count = 0
+              row = i
+              col = k
+              for x in range(0, self.cols - 3):
+                  if self.board[row][col] == chip:
+                      count += 1
+                  else:
+                      count = 0
+                  if count == 4:
+                      return True
+                  row += 1
+                  col += 1
+          for i in range(3, self.rows):
+              count = 0
+              row = i
+              col = k
+              for x in range(3, self.cols):
+                  if self.board[row][col] == chip:
+                      count += 1
+                  else:
+                      count = 0
+                  row -= 1
+                  col += 1
+                  if count == 4:
+                      print('check_diag_2')
+                      return True
+      return False
+
+  def check_winner(self, chip):
+    if self.check_cols(chip) or self.check_rows(chip) or self.check_diagnols(chip):
       return True
       
     

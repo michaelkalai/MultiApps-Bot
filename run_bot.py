@@ -12,7 +12,6 @@ def run_bot():
     async def on_ready():
         print(f"{bot.user} is online")
 
-
     @bot.command()
     async def hello(ctx):
         await ctx.send('Hello there!')
@@ -70,6 +69,26 @@ def run_bot():
                     await ctx.send("I win!")
                 if ans == "rock":
                     await ctx.send("You win!")
+
+    #Flag guesser
+    @bot.command()
+    async def Flag(ctx):
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel
+
+        flags = ["au", "af", "ax", "ca", "aw", "vn", "al", "ky","bj","cf","cn","cx","fo","er","us","jp","kr","dk","ic","ge","gl","jm","my","xk","fr","nr","no","pw","za","lc","tr","bv","mx","br"]
+        emote = random.choice(flags)
+        await ctx.send("What flag is this? Enter as a two letter abbreviation.")
+        await ctx.send(":flag_" + emote + ":")
+        msg = await bot.wait_for("message", check=check)
+        guess = msg.content
+        if guess == emote:
+            await ctx.send("Correct!")
+        if guess != emote:
+            await ctx.send("Incorrect! The correct abbreviation is ||" + emote + "||")
+
+
+#Random num gen
 
     @bot.command()
     async def RandomNum(ctx):
@@ -152,7 +171,7 @@ def run_bot():
 
         # Chooses Random Name
         vcPicked = random.choice(member_ids)
-      
+
         # Prints Name to Chat
         await ctx.send("You have bee selected from: " + given_name + "! " +
                        "<@" + str(vcPicked) + ">")
@@ -166,5 +185,5 @@ def run_bot():
         await ctx.send(wanted_channel_id)
 
     bot.run(
-        "MTA0ODQyOTk3Mzg0MjcxMDU2OQ.GsvPCF.lJkEXWYh2sfM23dgYhnTjedwYrhZyII3Wx01Ks"
+        "MTA0ODQyOTk3Mzg0MjcxMDU2OQ.Goh1eM.pKG5Kwbu43Kx0P-W5xBHCavuEFCRagXCgiQGqU"
     )
