@@ -1,6 +1,9 @@
 import discord
 import copy
 
+
+
+
 class Connect_Four():
   def __init__(self, ctx, user1, user2):
     self.ctx = ctx
@@ -19,7 +22,6 @@ class Connect_Four():
 
   def chip_to_cir(self, chip):
     if chip == 'x':
-      print('bro')
       return ':red_circle:'
     elif chip == 'o':
       return ':yellow_circle:'
@@ -38,7 +40,6 @@ class Connect_Four():
     embed.add_field(name=":one: " + ":two: " + ":three: " + ":four: " + ":five: " + ":six: " + ":seven: ",
                         value=temp_board[0] + "\n" + temp_board[1] + "\n" + temp_board[2] + "\n" + temp_board[3] + "\n" + temp_board[4] + "\n" + temp_board[5],
                         inline=False)
-    print(self.board)
     return embed
   
   def insert_chip(self, chip, col):
@@ -52,7 +53,6 @@ class Connect_Four():
   def has_space(self, col):
     for row in range(self.rows):
       if self.board[row][col] == '-':
-        print(row, col)
         return True
     return False
   
@@ -60,12 +60,12 @@ class Connect_Four():
     for col in range(self.cols):
         count = 0
         for row in range(self.rows):
-            if count == 4:
-                return True
-            elif self.board[row][col] == chip:
+            if self.board[row][col] == chip:
                 count += 1
             else:
                 count = 0
+            if count == 4:
+                return True
     return False
 
   def check_rows(self, chip):

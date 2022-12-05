@@ -24,65 +24,70 @@ def run_bot():
     @bot.command()
     async def connect4(ctx, *args):
         arg = ' '.join(args)
+
         def check_1(msg):
-          return msg.author == connect.user1 and msg.channel == ctx.channel
+            return msg.author == connect.user1 and msg.channel == ctx.channel
+
         def check_2(msg):
-          return str(msg.author) == connect.user2 and msg.channel == ctx.channel
-        
+            return str(
+                msg.author) == connect.user2 and msg.channel == ctx.channel
+
         guild_id = ctx.guild.id
         server = bot.get_guild(guild_id)
         members = server.members
         user1 = ctx.author
         user2 = ''
         for member in members:
-          if member.name in arg:
-            user2 = member.name + '#' + member.discriminator
-            break
+            if member.name in arg:
+                user2 = member.name + '#' + member.discriminator
+                break
         if len(user2) < 1:
-          await ctx.send(f'{arg} not found')
-          return
-        
+            await ctx.send(f'{arg} not found')
+            return
+
         connect = Connect_Four(ctx, user1, user2)
         player = connect.user1
         chip = 'x'
         embed = connect.display_board()
         await ctx.send(embed=embed)
-        
+
         while True:
-          con_it = True
-          await ctx.send(f'{player}\'s turn')
-          if player == connect.user1:
-            msg = await bot.wait_for("message", check=check_1)
-          elif player == connect.user2:
-            msg = await bot.wait_for("message", check=check_2)
-          else:
-            continue
-          col = msg.content
-          try:
-            if 0 < int(col) < 8:
-              col = int(col)
-              col -= 1
+            con_it = True
+            await ctx.send(f'{player}\'s turn')
+            if player == connect.user1:
+                msg = await bot.wait_for("message", check=check_1)
+            elif player == connect.user2:
+                msg = await bot.wait_for("message", check=check_2)
             else:
-              con_it = False
-          except:
-            print('error')
-            con_it = False
-          if con_it == True:
-            if connect.has_space(col):
-              connect.insert_chip(chip, col)
-            else:
-              await ctx.send('Column full')
-              continue
-            embed = connect.display_board()
-            await ctx.send(embed=embed)
-            if connect.check_winner(chip):
-              await ctx.send(f'{player} has won!')
-              break
-            elif connect.is_full():
-              await ctx.send('Tie game!')
-              break
-            player = connect.user1 if player == connect.user2 else connect.user2
-            chip = 'x' if chip == 'o' else 'o'
+                continue
+            col = msg.content
+            try:
+                if 0 < int(col) < 8:
+                    col = int(col)
+                    col -= 1
+                else:
+                    await ctx.send('Please enter an integer between 1 and 7')
+                    con_it = False
+            except:
+                await ctx.send('Please enter an integer between 1 and 7')
+                print('error')
+                con_it = False
+            if con_it == True:
+                if connect.has_space(col):
+                    connect.insert_chip(chip, col)
+                else:
+                    await ctx.send('Column full')
+                    continue
+                embed = connect.display_board()
+                await ctx.send(embed=embed)
+                if connect.check_winner(chip):
+                    await ctx.send(f'{player} has won!')
+                    break
+                elif connect.is_full():
+                    await ctx.send('Tie game!')
+                    break
+                player = connect.user1 if player == connect.user2 else connect.user2
+                chip = 'x' if chip == 'o' else 'o'
 
     @bot.command()
     async def spin(ctx):
@@ -253,30 +258,30 @@ def run_bot():
         await bot.process_commands(msg)
     #'''
     #The bracket generator (currently version 1)
-   
+
     # #Bracket generator
     @bot.command()
     async def genBracket(ctx, timer=60):
 
         #this is phase 1, where the bot will ask for input
-        await ctx.send("Bracket created! React with :white_check_mark: to enter into the bracket!")
+        await ctx.send(
+            "Bracket created! React with :white_check_mark: to enter into the bracket!"
+        )
         #too lazy to convert to minutes hours and day
         await ctx.send("Entry will end in " + str(timer) + " seconds!")
         time.sleep(timer)
-        
+
         #this is phase 2, where the bot will collect the inputs
         await ctx.send("Time's up, omar ugly as hell")
 
         def check(msg):
-          print(msg)
-        
+            print(msg)
+
     #     #async def on_message(msg):
     #       #print(msg)
     #       #print(msg.content)
 
-        
-
-    #  
+    #
     #VC Person Picker
     @bot.command()
     async def vcPicker(ctx, *, given_name=None):
@@ -314,7 +319,8 @@ def run_bot():
                          icon_url=ctx.author.avatar.url)
         embed.set_thumbnail(url="https://imgur.com/gallery/PJBNl")
         embed.add_field(name="Field 1 Test",
-                        value="This is a testing field without inline." + "\n" + "bro",
+                        value="This is a testing field without inline." +
+                        "\n" + "bro",
                         inline=False)
         embed.add_field(name="Field 2 Test",
                         value="This is a testing field with inline.",
@@ -325,8 +331,4 @@ def run_bot():
         embed.set_footer(text="This is a footer for the embed.")
         await ctx.send(embed=embed)
 
-    
     bot.run(variables.token)
-
-
-
