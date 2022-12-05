@@ -1,7 +1,11 @@
 import discord
 from discord.ext import commands
 import random
+import pygame
 import time
+import datetime
+import variables
+from connect_four import Connect_Four
 
 
 def run_bot():
@@ -16,6 +20,71 @@ def run_bot():
     async def hello(ctx):
         await ctx.send('Hello there!')
         print(ctx.author)
+
+    @bot.command()
+    async def connect4(ctx, arg):
+        def check_1(msg):
+          return msg.author == connect.user1 and msg.channel == ctx.channel
+        def check_2(msg):
+          return str(msg.author) == connect.user2 and msg.channel == ctx.channel
+        # print(ctx)
+        # return
+        guild_id = ctx.guild.id
+        server = bot.get_guild(guild_id)
+        members = server.members
+        # print(members)
+        # return
+        user1 = ctx.author
+        user2 = ''
+        for member in members:
+          if member.name in arg:
+            user2 = member.name + '#' + member.discriminator
+            break
+        if len(user2) < 1:
+          await ctx.send(f'{arg} not found')
+          return
+        # print(user1, user2)
+        # return
+        connect = Connect_Four(bot, user1, user2)
+        player = connect.user1
+        chip = 'x'
+        connect.display_board()
+        await ctx.send(f'{player}\'s turn')
+        
+        while True:
+          con_it = True
+          print(f'{player}\'s turn')
+          if player == connect.user1:
+            print('user2_fail')
+            msg = await bot.wait_for("message", check=check_1)
+          elif player == connect.user2:
+            print('user1_fail')
+            msg = await bot.wait_for("message", check=check_2)
+          else:
+            continue
+          col = msg.content
+          try:
+            if 0 < int(col) < 8:
+              col = int(col)
+              col -= 1
+            else:
+              con_it = False
+          except:
+            print('error')
+            con_it = False
+          if con_it == True:
+            if connect.has_space(col):
+              connect.insert_chip(chip, col)
+            else:
+              print('column full')
+              continue
+            connect.display_board()
+            if connect.check_winner(chip):
+              print(f'{player} has won!')
+              break
+            player = connect.user1 if player == connect.user2 else connect.user2
+            chip = 'x' if chip == 'o' else 'o'
+            await ctx.send(f'{player}\'s turn')
 
     @bot.command()
     async def spin(ctx):
@@ -56,19 +125,19 @@ def run_bot():
                 await ctx.send("Tie!")
             if comp_choice == "rock":
                 if ans == "paper":
-                    await ctx.send("You win!")
+                    await ctx.send("You win! I chose " + comp_choice)
                 if ans == "scissors":
-                    await ctx.send("I win!")
+                    await ctx.send("I win! I chose " + comp_choice)
             if comp_choice == "paper":
                 if ans == "rock":
-                    await ctx.send("I win!")
+                    await ctx.send("I win! I chose " + comp_choice)
                 if ans == "scissors":
-                    await ctx.send("You win!")
+                    await ctx.send("You win! I chose " + comp_choice)
             if comp_choice == "scissors":
                 if ans == "paper":
-                    await ctx.send("I win!")
+                    await ctx.send("I win! I chose " + comp_choice)
                 if ans == "rock":
-                    await ctx.send("You win!")
+                    await ctx.send("You win! I chose " + comp_choice)
 
     #Flag guesser
     @bot.command()
@@ -76,16 +145,23 @@ def run_bot():
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel
 
-        flags = ["au", "af", "ax", "ca", "aw", "vn", "al", "ky","bj","cf","cn","cx","fo","er","us","jp","kr","dk","ic","ge","gl","jm","my","xk","fr","nr","no","pw","za","lc","tr","bv","mx","br"]
+        flags = [
+            "au", "af", "ax", "ca", "aw", "vn", "al", "ky", "bj", "cf", "cn",
+            "cx", "fo", "er", "us", "jp", "kr", "dk", "ic", "ge", "gl", "jm",
+            "my", "xk", "fr", "nr", "no", "pw", "za", "lc", "tr", "bv", "mx",
+            "br"
+        ]
         emote = random.choice(flags)
-        await ctx.send("What flag is this? Enter as a two letter abbreviation.")
+        await ctx.send("What flag is this? Enter as a two letter abbreviation."
+                       )
         await ctx.send(":flag_" + emote + ":")
         msg = await bot.wait_for("message", check=check)
         guess = msg.content
         if guess == emote:
             await ctx.send("Correct!")
         if guess != emote:
-            await ctx.send("Incorrect! The correct abbreviation is ||" + emote + "||")
+            await ctx.send("Incorrect! The correct abbreviation is ||" +
+                           emote + "||")
 
 
 #Random num gen
@@ -117,7 +193,6 @@ def run_bot():
             await ctx.send("Tails!")
 
     #command to roll dice
-    #'''
     @bot.command()
     async def rollDice(ctx, maxNum, rollAmt=1, rollMod=0):
         #Checks if maxNum is valid (above 1)
@@ -148,16 +223,52 @@ def run_bot():
                 else:
                     rollList.append(0)
 
-            #this is not it
-            #finalNum = (rolledNum * rollAmt) + rollMod
+            #prints final results
             await ctx.send("Roll total with a " + str(rollMod) +
                            " modifier: " + str(finalNum) + "\n")
             await ctx.send("Your unmodified rolls: ")
             await ctx.send(str(rollList))
-            #await ctx.send(str(finalNum))
 
     #'''
 
+    #Testing junk (iSpy)
+    #'''
+    # @bot.event
+    # async def on_message(msg):
+    #     if msg.author == bot.user:
+    #         return
+    #     username = str(msg.author)
+    #     user_message = str(msg.content)
+    #     channel = str(msg.channel)
+        #print(f"{username} said: {user_message} in {channel}")
+        
+
+    #'''
+    #The bracket generator (currently version 1)
+   
+    # #Bracket generator
+    @bot.command()
+    async def genBracket(ctx, timer=60):
+
+        #this is phase 1, where the bot will ask for input
+        await ctx.send("Bracket created! React with :white_check_mark: to enter into the bracket!")
+        #too lazy to convert to minutes hours and day
+        await ctx.send("Entry will end in " + str(timer) + " seconds!")
+        time.sleep(timer)
+        
+        #this is phase 2, where the bot will collect the inputs
+        await ctx.send("Time's up, omar ugly as hell")
+
+        def check(msg):
+          print(msg)
+        
+    #     #async def on_message(msg):
+    #       #print(msg)
+    #       #print(msg.content)
+
+        
+
+    #  
     #VC Person Picker
     @bot.command()
     async def vcPicker(ctx, *, given_name=None):
@@ -184,6 +295,30 @@ def run_bot():
 
         await ctx.send(wanted_channel_id)
 
-    bot.run(
-        "MTA0ODQyOTk3Mzg0MjcxMDU2OQ.Goh1eM.pKG5Kwbu43Kx0P-W5xBHCavuEFCRagXCgiQGqU"
-    )
+    @bot.command()
+    async def embed(ctx):
+        embed = discord.Embed(title="Test",
+                              url="",
+                              description="No",
+                              color=0xFF5733)
+        embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+        embed.set_thumbnail(url="https://imgur.com/gallery/PJBNl")
+        embed.add_field(name="Field 1 Test",
+                        value="This is a testing field without inline.",
+                        inline=False)
+        embed.add_field(name="Field 2 Test",
+                        value="This is a testing field with inline.",
+                        inline=True)
+        embed.add_field(name="Field 2 Test",
+                        value="This is a testing field with inline.",
+                        inline=True)
+        embed.set_footer(text="This is a footer for the embed.")
+        await ctx.send(embed=embed)
+
+    
+    bot.run(variables.token)
+
+
+

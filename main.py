@@ -4,9 +4,13 @@
 import discord
 from discord.ext import commands
 import random
-# from run_bot import run_bot
-from test import connect_four_test
+
+#from music_bot import music_bot
+
+#from test import connect_four_test
+from run_bot import run_bot
 
 if __name__ == "__main__":
-   # run_bot()
-  connect_four_test()
+  run_bot()
+#music_bot()
+#connect_four_test()
