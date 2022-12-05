@@ -22,18 +22,16 @@ def run_bot():
         print(ctx.author)
 
     @bot.command()
-    async def connect4(ctx, arg):
+    async def connect4(ctx, *args):
+        arg = ' '.join(args)
         def check_1(msg):
           return msg.author == connect.user1 and msg.channel == ctx.channel
         def check_2(msg):
           return str(msg.author) == connect.user2 and msg.channel == ctx.channel
-        # print(ctx)
-        # return
+        
         guild_id = ctx.guild.id
         server = bot.get_guild(guild_id)
         members = server.members
-        # print(members)
-        # return
         user1 = ctx.author
         user2 = ''
         for member in members:
@@ -43,22 +41,19 @@ def run_bot():
         if len(user2) < 1:
           await ctx.send(f'{arg} not found')
           return
-        # print(user1, user2)
-        # return
-        connect = Connect_Four(bot, user1, user2)
+        
+        connect = Connect_Four(ctx, user1, user2)
         player = connect.user1
         chip = 'x'
-        connect.display_board()
-        await ctx.send(f'{player}\'s turn')
+        embed = connect.display_board()
+        await ctx.send(embed=embed)
         
         while True:
           con_it = True
-          print(f'{player}\'s turn')
+          await ctx.send(f'{player}\'s turn')
           if player == connect.user1:
-            print('user2_fail')
             msg = await bot.wait_for("message", check=check_1)
           elif player == connect.user2:
-            print('user1_fail')
             msg = await bot.wait_for("message", check=check_2)
           else:
             continue
@@ -76,15 +71,18 @@ def run_bot():
             if connect.has_space(col):
               connect.insert_chip(chip, col)
             else:
-              print('column full')
+              await ctx.send('Column full')
               continue
-            connect.display_board()
+            embed = connect.display_board()
+            await ctx.send(embed=embed)
             if connect.check_winner(chip):
-              print(f'{player} has won!')
+              await ctx.send(f'{player} has won!')
+              break
+            elif connect.is_full():
+              await ctx.send('Tie game!')
               break
             player = connect.user1 if player == connect.user2 else connect.user2
             chip = 'x' if chip == 'o' else 'o'
-            await ctx.send(f'{player}\'s turn')
 
     @bot.command()
     async def spin(ctx):
@@ -232,17 +230,27 @@ def run_bot():
     #'''
 
     #Testing junk (iSpy)
-    #'''
-    # @bot.event
-    # async def on_message(msg):
-    #     if msg.author == bot.user:
-    #         return
-    #     username = str(msg.author)
-    #     user_message = str(msg.content)
-    #     channel = str(msg.channel)
-        #print(f"{username} said: {user_message} in {channel}")
-        
+    #comment the ''' below to turn on, uncomment to turn on
+    '''
+    @bot.event
+    async def on_message(msg):
+        #avoids infinite loop
+        if msg.author == bot.user:
+          return
 
+        #gets message data
+        username = str(msg.author)
+        user_message = str(msg.content)
+        channel = str(msg.channel)
+        #assigns what channel the bot will send message to (i-spy ID is 1049110503236059186)
+        tar_channel = bot.get_channel(1049110503236059186)
+        #print(f"{username} said: {user_message} in {channel}")
+        await tar_channel.send(f"{username} said: {user_message} in {channel}")
+
+        #for guild in bot.guilds:
+          #for text_ch in guild.text_channels:
+            #print(text_ch.id)
+        await bot.process_commands(msg)
     #'''
     #The bracket generator (currently version 1)
    
@@ -306,7 +314,7 @@ def run_bot():
                          icon_url=ctx.author.avatar.url)
         embed.set_thumbnail(url="https://imgur.com/gallery/PJBNl")
         embed.add_field(name="Field 1 Test",
-                        value="This is a testing field without inline.",
+                        value="This is a testing field without inline." + "\n" + "bro",
                         inline=False)
         embed.add_field(name="Field 2 Test",
                         value="This is a testing field with inline.",

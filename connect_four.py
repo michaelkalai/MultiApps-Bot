@@ -1,4 +1,5 @@
 import discord
+import copy
 
 class Connect_Four():
   def __init__(self, ctx, user1, user2):
@@ -16,10 +17,29 @@ class Connect_Four():
       ['-', '-', '-', '-', '-', '-', '-']
     ]
 
+  def chip_to_cir(self, chip):
+    if chip == 'x':
+      print('bro')
+      return ':red_circle:'
+    elif chip == 'o':
+      return ':yellow_circle:'
+    else:
+      return ':white_circle:'
+  
   def display_board(self):
-    # for row in self.board:
-    #   print(row)
-    pass
+    con_board = copy.deepcopy(self.board)
+    for i in range(self.rows):
+      con_board[i] = [self.chip_to_cir(value) for value in con_board[i]]
+    temp_board = ['   '.join(row) for row in con_board]
+    embed = discord.Embed(title="Connect 4",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+    embed.add_field(name=":one: " + ":two: " + ":three: " + ":four: " + ":five: " + ":six: " + ":seven: ",
+                        value=temp_board[0] + "\n" + temp_board[1] + "\n" + temp_board[2] + "\n" + temp_board[3] + "\n" + temp_board[4] + "\n" + temp_board[5],
+                        inline=False)
+    print(self.board)
+    return embed
   
   def insert_chip(self, chip, col):
     self.board.reverse()
@@ -87,11 +107,17 @@ class Connect_Four():
                   row -= 1
                   col += 1
                   if count == 4:
-                      print('check_diag_2')
                       return True
       return False
 
   def check_winner(self, chip):
     if self.check_cols(chip) or self.check_rows(chip) or self.check_diagonals(chip):
       return True
+
+  def is_full(self):
+    for row in self.board:
+      for col in row:
+        if col == '-':
+          return False
+    return True
     
