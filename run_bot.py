@@ -299,9 +299,7 @@ def run_bot():
           
 
           tar_channel = bot.get_channel(1049110503236059186)
-          await tar_channel.send(f"Message ID: {msg_id} \nChannel name: {ch_name} \n"Author: {user})
-          #await tar_channel.send(f"Channel name: {ch_name}")
-          #await tar_channel.send(f"{user}")
+          await tar_channel.send(f"Message ID: {msg_id} \nChannel name: {ch_name} \nAuthor: {user}")
           #await tar_channel.send(f"{}")
         else:
           print("No valid log_mode set for ISpy")
