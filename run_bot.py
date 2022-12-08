@@ -23,7 +23,9 @@ def run_bot():
 
     @bot.command()
     async def connect4(ctx, *args):
-        arg = ' '.join(args)
+        arg = ' '.join(args).lower()
+        if '@' in arg:
+          arg = arg[2:-1]
 
         def check_1(msg):
             return msg.author == connect.user1 and msg.channel == ctx.channel
@@ -32,28 +34,38 @@ def run_bot():
             return str(
                 msg.author) == connect.user2 and msg.channel == ctx.channel
 
+        con = True
         guild_id = ctx.guild.id
         server = bot.get_guild(guild_id)
         members = server.members
         user1 = ctx.author
+        user1_id = str(ctx.author.id)
         user2 = ''
         for member in members:
-            if member.name in arg:
-                user2 = member.name + '#' + member.discriminator
-                break
+            # print(arg)
+            # print(member.id)
+            if arg in member.name.lower():
+              user2 = member.name + '#' + member.discriminator
+              user2_id = str(member.id)
+              break
+            elif arg == str(member.id):
+              user2 = member.name + '#' + member.discriminator
+              user2_id = str(member.id)
+              break
         if len(user2) < 1:
             await ctx.send(f'{arg} not found')
             return
 
-        connect = Connect_Four(ctx, user1, user2)
+        connect = Connect_Four(ctx, user1, user2, user1_id, user2_id)
         player = connect.user1
         chip = 'x'
-        embed = connect.display_board()
+        embed = connect.display_board(player)
         await ctx.send(embed=embed)
+        # await ctx.send(f'{player}\'s turn')
+        # await ctx.send('Type concede to surrender')
 
-        while True:
+        while con == True:
             con_it = True
-            await ctx.send(f'{player}\'s turn')
             if player == connect.user1:
                 msg = await bot.wait_for("message", check=check_1)
             elif player == connect.user2:
@@ -62,32 +74,40 @@ def run_bot():
                 continue
             col = msg.content
             try:
-                if 0 < int(col) < 8:
-                    col = int(col)
-                    col -= 1
-                else:
-                    await ctx.send('Please enter an integer between 1 and 7')
-                    con_it = False
+              if 0 < int(col) < 8:
+                  col = int(col)
+                  col -= 1
+              else:
+                  await ctx.send('Please enter an integer between 1 and 7')
+                  con_it = False
             except:
-                await ctx.send('Please enter an integer between 1 and 7')
+              if 'concede' in col:
+                id = connect.user1_id if player == connect.user1 else connect.user2_id
+                await ctx.send(f'<@{id}> surrendered! :pensive:')
+                player = connect.user1 if player == connect.user2 else connect.user2
+                await ctx.send(f'<@{id}> has won! :tada:')
+                con = False
+              else:
                 print('error')
-                con_it = False
+              con_it = False
             if con_it == True:
                 if connect.has_space(col):
                     connect.insert_chip(chip, col)
                 else:
                     await ctx.send('Column full')
                     continue
-                embed = connect.display_board()
+                embed = connect.display_board(player)
                 await ctx.send(embed=embed)
                 if connect.check_winner(chip):
-                    await ctx.send(f'{player} has won!')
+                    id = connect.user1_id if player == connect.user1 else connect.user2_id
+                    await ctx.send(f'<@{id}> has won! :tada:')
                     break
                 elif connect.is_full():
                     await ctx.send('Tie game!')
                     break
                 player = connect.user1 if player == connect.user2 else connect.user2
                 chip = 'x' if chip == 'o' else 'o'
+                # await ctx.send(f'{player}\'s turn')
 
     @bot.command()
     async def spin(ctx):
@@ -236,25 +256,58 @@ def run_bot():
 
     #Testing junk (iSpy)
     #comment the ''' below to turn on, uncomment to turn on
-    '''
+    #'''
     @bot.event
     async def on_message(msg):
+        # print(msg)
         #avoids infinite loop
         if msg.author == bot.user:
           return
+        
+        #sets logging mode. 0 = off, 1 = repeat, 2 = basic, 3 = meta, anything else gives debug
+        log_mode = 3
+        if log_mode == 0:
+          pass
+        elif log_mode == 1:
+          pass #repeat not develeoped so it will act as if turned off
+        elif log_mode == 2:
+          #gets basic message data
+          username = str(msg.author)
+          user_message = str(msg.content)
+          channel = str(msg.channel)
+          #gets the UTC time and converts it to EST
+          timestamp = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=19)))
+          #converts the formatting so that it looks nicer
+          pretty_time = timestamp.strftime(r"%I:%M %p")
+          
+          
+          #assigns what channel the bot will send message to (i-spy ID is 1049110503236059186)
+          tar_channel = bot.get_channel(1049110503236059186)
+          #print(f"{username} said: {user_message} in {channel}") #This is to print to console
+          await tar_channel.send(f"{username} said: {user_message} in {channel} at {pretty_time} EST")
+          #await tar_channel.send(f"{pretty_time}") #sends only the time
 
-        #gets message data
-        username = str(msg.author)
-        user_message = str(msg.content)
-        channel = str(msg.channel)
-        #assigns what channel the bot will send message to (i-spy ID is 1049110503236059186)
-        tar_channel = bot.get_channel(1049110503236059186)
-        #print(f"{username} said: {user_message} in {channel}")
-        await tar_channel.send(f"{username} said: {user_message} in {channel}")
+        elif log_mode == 3:
+          #pass
+          #print(msg) #prints raw metadata to console
+          #data collection
+          msg_id = msg.id
+          #ch_id = msg.channel
+          ch_name = msg.channel
+          user = msg.author
+          
+          
 
-        #for guild in bot.guilds:
-          #for text_ch in guild.text_channels:
-            #print(text_ch.id)
+          tar_channel = bot.get_channel(1049110503236059186)
+          await tar_channel.send(f"Message ID: {msg_id} \nChannel name: {ch_name} \n"Author: {user})
+          #await tar_channel.send(f"Channel name: {ch_name}")
+          #await tar_channel.send(f"{user}")
+          #await tar_channel.send(f"{}")
+        else:
+          print("No valid log_mode set for ISpy")
+        
+        
+        #this makes it so it doesn't stop processing commands due to logging
         await bot.process_commands(msg)
     #'''
     #The bracket generator (currently version 1)
@@ -264,9 +317,7 @@ def run_bot():
     async def genBracket(ctx, timer=60):
 
         #this is phase 1, where the bot will ask for input
-        await ctx.send(
-            "Bracket created! React with :white_check_mark: to enter into the bracket!"
-        )
+        await ctx.send("Bracket created! React with :white_check_mark: to enter into the bracket!")
         #too lazy to convert to minutes hours and day
         await ctx.send("Entry will end in " + str(timer) + " seconds!")
         time.sleep(timer)
@@ -309,25 +360,24 @@ def run_bot():
         await ctx.send(wanted_channel_id)
 
     @bot.command()
-    async def embed(ctx):
-        embed = discord.Embed(title="Test",
+    async def helpBot(ctx):
+        embed = discord.Embed(title="Multi-App Bot Help",
                               url="",
-                              description="No",
+                              description="",
                               color=0xFF5733)
         embed.set_author(name=ctx.author.display_name,
                          url="https://realdrewdata.medium.com/",
                          icon_url=ctx.author.avatar.url)
         embed.set_thumbnail(url="https://imgur.com/gallery/PJBNl")
-        embed.add_field(name="Field 1 Test",
-                        value="This is a testing field without inline." +
-                        "\n" + "bro",
-                        inline=False)
-        embed.add_field(name="Field 2 Test",
-                        value="This is a testing field with inline.",
-                        inline=True)
-        embed.add_field(name="Field 2 Test",
-                        value="This is a testing field with inline.",
-                        inline=True)
+        embed.add_field(
+            name="Commands",
+            value=
+            "$vcPicker <Channel Name> - Randomly picks someone from the specified voice channel.\n\n"
+            +
+            "$get_channel <Channel Name> - Returns the ID of the respective channel.\n\n"
+            +
+            "$rollDice <maxNum, rollAmt=1, rollMod=0> - Rolls a dice with the specified parameters.",
+            inline=False)
         embed.set_footer(text="This is a footer for the embed.")
         await ctx.send(embed=embed)
 
