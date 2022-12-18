@@ -113,7 +113,7 @@ class Calculator(discord.ui.View):
           self.value1 = "-" + self.value1
     elif len(self.value2) > 0:
       if float(self.value2) > 0 or float(self.value2) < 0:
-        if "-" in self.value1:
+        if "-" in self.value2:
           self.value2 = self.value2[1:]
         else:
           self.value2 = "-" + self.value2
@@ -139,3 +139,33 @@ class Calculator(discord.ui.View):
   @discord.ui.button(label = "dg/rd", row = 0, style = discord.ButtonStyle.red)
   async def deg_rad(self, interaction: discord.Interaction, button: discord.ui.Button):
     self.type = "deg" if self.type == "rad" else "rad"
+    embed = self.emb()
+    await interaction.response.edit_message(embed=embed)
+
+  @discord.ui.button(label = "+", row = 0, style = discord.ButtonStyle.green)
+  async def plus(self, interaction: discord.Interaction, button: discord.ui.Button):
+    self.selected = "+"
+    self.change_val()
+    embed = self.emb()
+    await interaction.response.edit_message(embed=embed)
+
+  @discord.ui.button(label = "-", row = 1, style = discord.ButtonStyle.green)
+  async def minus(self, interaction: discord.Interaction, button: discord.ui.Button):
+    self.selected = "-"
+    self.change_val()
+    embed = self.emb()
+    await interaction.response.edit_message(embed=embed)
+
+  @discord.ui.button(label = "X", row = 2, style = discord.ButtonStyle.green)
+  async def mult(self, interaction: discord.Interaction, button: discord.ui.Button):
+    self.selected = "X"
+    self.change_val()
+    embed = self.emb()
+    await interaction.response.edit_message(embed=embed)
+    
+  @discord.ui.button(label = "/", row = 3, style = discord.ButtonStyle.green)
+  async def div(self, interaction: discord.Interaction, button: discord.ui.Button):
+    self.selected = "/"
+    self.change_val()
+    embed = self.emb()
+    await interaction.response.edit_message(embed=embed)

@@ -13,5 +13,5 @@ from music_bot import music_bot
 
 
 if __name__ == "__main__":
-  #run_bot()
-   music_bot()
+  run_bot()
+  # music_bot()
