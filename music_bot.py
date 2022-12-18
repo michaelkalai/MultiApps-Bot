@@ -1,150 +1,96 @@
-
 import discord
+import os
+# load our local env so we dont have the token in public
+from dotenv import load_dotenv
 from discord.ext import commands
-import wavelink
+from discord.utils import get
+from discord import FFmpegPCMAudio
+from discord import TextChannel
+from youtube_dl import YoutubeDL
+import time
 
-client = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+def music_bot():
 
-
-class CustomPlayer(wavelink.Player):
-
-    def __init__(self):
-        super().__init__()
-        self.queue = wavelink.Queue()
-
-
-# HTTPS and websocket operations
-@client.event
-async def on_ready():
-    client.loop.create_task(connect_nodes())
-
-
-# helper function
-async def connect_nodes():
-    await client.wait_until_ready()
-    await wavelink.NodePool.create_node(
-        bot=client,
-        host='0.0.0.0',
-        port=2333,
-        password='youshallnotpass'
-    )
-
-
-# events
-
-@client.event
-async def on_wavelink_node_ready(node: wavelink.Node):
-    print(f'Node: <{node.identifier}> is ready!')
-
-
-@client.event
-async def on_wavelink_track_end(player: CustomPlayer, track: wavelink.Track, reason):
-    if not player.queue.is_empty:
-        next_track = player.queue.get()
-        await player.play(next_track)
-
-
-# commands
-
-@client.command()
-async def connect(ctx):
-    vc = ctx.voice_client # represents a discord voice connection
-    try:
-        channel = ctx.author.voice.channel
-    except AttributeError:
-        return await ctx.send("Please join a voice channel to connect.")
-
-    if not vc:
-        await ctx.author.voice.channel.connect(cls=CustomPlayer())
-    else:
-        await ctx.send("The bot is already connected to a voice channel")
-
-
-@client.command()
-async def disconnect(ctx):
-    vc = ctx.voice_client
-    if vc:
-        await vc.disconnect()
-    else:
-        await ctx.send("The bot is not connected to a voice channel.")
-
-
-@client.command()
-async def play(ctx, *, search: wavelink.YouTubeTrack):
-    vc = ctx.voice_client
-    if not vc:
-        custom_player = CustomPlayer()
-        vc: CustomPlayer = await ctx.author.voice.channel.connect(cls=custom_player)
-
-    if vc.is_playing():
-
-        vc.queue.put(item=search)
-
-        await ctx.send(embed=discord.Embed(
-            title=search.title,
-            url=search.uri,
-            author=ctx.author,
-            description=f"Queued {search.title} in {vc.channel}"
-        ))
-    else:
-        await vc.play(search)
-
-        await ctx.send(embed=discord.Embed(
-            title=vc.source.title,
-            url=vc.source.uri,
-            author=ctx.author,
-            description=f"Playing {vc.source.title} in {vc.channel}"
-        ))
-
-
-@client.command()
-async def skip(ctx):
-    vc = ctx.voice_client
-    if vc:
-        if not vc.is_playing():
-            return await ctx.send("Nothing is playing.")
-        if vc.queue.is_empty:
-            return await vc.stop()
-
-        await vc.seek(vc.track.length * 1000)
-        if vc.is_paused():
-            await vc.resume()
-    else:
-        await ctx.send("The bot is not connected to a voice channel.")
-
-
-@client.command()
-async def pause(ctx):
-    vc = ctx.voice_client
-    if vc:
-        if vc.is_playing() and not vc.is_paused():
-            await vc.pause()
-        else:
-            await ctx.send("Nothing is playing.")
-    else:
-        await ctx.send("The bot is not connected to a voice channel")
-
-
-@client.command()
-async def resume(ctx):
-    vc = ctx.voice_client
-    if vc:
-        if vc.is_paused():
-            await vc.resume()
-        else:
-            await ctx.send("Nothing is paused.")
-    else:
-        await ctx.send("The bot is not connected to a voice channel")
-
-
-# error handling
-
-@play.error
-async def play_error(ctx, error):
-    if isinstance(error, commands.BadArgument):
-        await ctx.send("Could not find a track.")
-    else:
-        await ctx.send("Please join a voice channel.")
-
-
-client.run('MTA0ODQyOTk3Mzg0MjcxMDU2OQ.Goh1eM.pKG5Kwbu43Kx0P-W5xBHCavuEFCRagXCgiQGqU')
+  load_dotenv()
+  intents = discord.Intents.all()
+  client = commands.Bot(command_prefix='$', intents = intents)  # prefix our commands with '.'
+  
+  players = {}
+  
+  
+  @client.event  # check if bot is ready
+  async def on_ready():
+      print('Bot online')
+  
+  
+  # command for bot to join the channel of the user, if the bot has already joined and is in a different channel, it will move to the channel the user is in
+  @client.command()
+  async def join(ctx):
+      channel = ctx.message.author.voice.channel
+      voice = get(client.voice_clients, guild=ctx.guild)
+      if voice and voice.is_connected():
+          await voice.move_to(channel)
+      else:
+          voice = await channel.connect()
+  
+  
+  # command to play sound from a youtube URL
+  @client.command()
+  async def play(ctx, url):
+      YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist': 'True'}
+      FFMPEG_OPTIONS = {
+          'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+      voice = get(client.voice_clients, guild=ctx.guild)
+  
+      if not voice.is_playing():
+          with YoutubeDL(YDL_OPTIONS) as ydl:
+              info = ydl.extract_info(url, download=False)
+          URL = info['url']
+          voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+          voice.is_playing()
+          await ctx.send('Bot is playing')
+  
+  # check if the bot is already playing
+      else:
+          await ctx.send("Bot is already playing")
+          return
+  
+  
+  # command to resume voice if it is paused
+  @client.command()
+  async def resume(ctx):
+      voice = get(client.voice_clients, guild=ctx.guild)
+  
+      if not voice.is_playing():
+          voice.resume()
+          await ctx.send('Bot is resuming')
+  
+  
+  # command to pause voice if it is playing
+  @client.command()
+  async def pause(ctx):
+      voice = get(client.voice_clients, guild=ctx.guild)
+  
+      if voice.is_playing():
+          voice.pause()
+          await ctx.send('Bot has been paused')
+  
+  
+  # command to stop voice
+  @client.command()
+  async def stop(ctx):
+      voice = get(client.voice_clients, guild=ctx.guild)
+  
+      if voice.is_playing():
+          voice.stop()
+          await ctx.send('Stopping...')
+  
+  
+  # command to clear channel messages
+  @client.command()
+  async def clear(ctx, amount=5):
+      await ctx.channel.purge(limit=amount)
+      await ctx.send("Messages have been cleared")
+  
+  
+  client.run('MTA0ODQyOTk3Mzg0MjcxMDU2OQ.Goh1eM.pKG5Kwbu43Kx0P-W5xBHCavuEFCRagXCgiQGqU')
