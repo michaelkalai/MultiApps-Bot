@@ -433,6 +433,11 @@ def run_bot():
     async def calc(ctx):
       view = Calculator()
       await ctx.reply(view=view)
-
+        
+    # Jordan's random gym tips
+    @bot.command()
+    async def gymtips(ctx):
+      num = random.randint(0, len(variables.gymtip) - 1)
+      await ctx.send(variables.gymtip[num])
   
     bot.run(variables.token)
