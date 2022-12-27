@@ -456,10 +456,26 @@ def run_bot():
 
     @bot.command()
     async def protein(ctx):
-        await ctx.send("Please type in your body weight:")
-
+        await ctx.send("Please type in M or F if you're male or female:")
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel
+        while True:
+          msg = await bot.wait_for("message", check=check)
+          g = msg. content
+          if g == "M":
+            proteindec = 0.75
+            break
+          if g == "m":
+            proteindec = 0.75
+            break
+          if g == "F":
+            proteindec = 0.83
+            break
+          if g == "f":
+            proteindec = 0.83
+            break
+        
+        await ctx.send("Please type in your body weight:")
         while True:
           msg = await bot.wait_for("message", check=check)
           body_weight = msg.content
@@ -470,7 +486,7 @@ def run_bot():
               )
   
           elif float(body_weight) > 0:
-            bodyweight = float(body_weight) * 0.7
+            bodyweight = float(body_weight) * proteindec
             await ctx.send(
                 f"Your daily intake should be {round(bodyweight)} grams of protein for muscle building")
             break
