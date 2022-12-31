@@ -10,7 +10,9 @@ from button import Menu
 from calculator import Calculator
 from hangman import Hangman
 from barber_finder import Barber_Finder
-
+from command_list import comml
+from trivia import Trivia
+import trivia_variables
 
 def run_bot():
     intents = discord.Intents.all()
@@ -413,26 +415,176 @@ def run_bot():
         await ctx.send(wanted_channel_id)
 
     @bot.command()
-    async def helpBot(ctx):
-        embed = discord.Embed(title="Multi-App Bot Help",
+    async def commandlist(ctx):
+      embed = discord.Embed(title="Myriad Command List",
                               url="",
                               description="",
                               color=0xFF5733)
-        embed.set_author(name=ctx.author.display_name,
+      embed.set_author(name=ctx.author.display_name,
                          url="https://realdrewdata.medium.com/",
                          icon_url=ctx.author.avatar.url)
-        embed.set_thumbnail(url="https://imgur.com/gallery/PJBNl")
-        embed.add_field(
-            name="Commands",
-            value=
-            "$vcPicker <Channel Name> - Randomly picks someone from the specified voice channel.\n\n"
-            +
-            "$get_channel <Channel Name> - Returns the ID of the respective channel.\n\n"
-            +
-            "$rollDice <maxNum, rollAmt=1, rollMod=0> - Rolls a dice with the specified parameters.",
-            inline=False)
-        embed.set_footer(text="This is a footer for the embed.")
-        await ctx.send(embed=embed)
+      embed.add_field(
+            name ="Command Categories:",
+            value =
+            "Games\n" + "" + "Math\n" + "Gym\n" + "VC Commands\n" + "Tools\n" + "Other\n" + "All Commands"
+        )
+      embed.set_footer(text="This is a footer for the embed.")
+      await ctx.send(embed=embed)
+
+      await ctx.send("Please select one of the categories listed above:")
+      def check(msg):
+        return msg.author == ctx.author and msg.channel == ctx.channel
+      while True:
+        msg = await bot.wait_for("message", check=check)
+        if msg.content == "Games":
+          c = 0
+          break
+        if msg.content == "Math":
+          c = 1
+          break
+        if msg.content == "Gym":
+          c = 2
+          break
+        if msg.content == "VC Commands":
+          c = 3
+          break
+        if msg.content == "Tools":
+          c = 4
+          break
+        if msg.content == "Other":
+          c = 5
+          break
+        if msg.content == "All Commands":
+          c = 6
+          break
+
+      while True:
+        if c == 0:
+          embed = discord.Embed(title="Myriad: Games",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[0],
+              inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 1:
+          embed = discord.Embed(title="Myriad: Math",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[1],
+              inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 2:
+          embed = discord.Embed(title="Myriad: Gym",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[2],
+              inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 3:
+          embed = discord.Embed(title="Myriad: VC Commands",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[3],
+              inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 4:
+          embed = discord.Embed(title="Myriad: Tools",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[4],
+                inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 5:
+          embed = discord.Embed(title="Myriad: Other",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Commands:",
+              value=comml[5],
+                inline=False)
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
+        if c == 6:
+          embed = discord.Embed(title="Myriad: All Commands",
+                              url="",
+                              description="",
+                              color=0xFF5733)
+          embed.set_author(name=ctx.author.display_name,
+                         url="https://realdrewdata.medium.com/",
+                         icon_url=ctx.author.avatar.url)
+          embed.add_field(
+              name="Games:",
+              value=comml[0],
+                inline=False)
+          embed.add_field(
+              name="Math:",
+              value=comml[1],
+                inline=False)
+          embed.add_field(
+              name="Gym:",
+              value=comml[2],
+                inline=False)
+          embed.add_field(
+              name="VC Commands:",
+              value=comml[3],
+                inline=False)
+          embed.add_field(
+              name="Tools:",
+              value=comml[4],
+                inline=False)
+          embed.add_field(
+              name="Other:",
+              value=comml[5],
+                inline=False)
+          
+          embed.set_footer(text="This is a footer for the embed.")
+          await ctx.send(embed=embed)
+          break
 
     @bot.command()
     async def menu(ctx):
@@ -560,5 +712,41 @@ def run_bot():
                 await ctx.send(
                     f"Out of lives! The correct word/phrase was \"{word}\"")
                 break
+        
+
+              
+    @bot.command()
+    async def trivia(ctx, args):
+      arg = ''.join(args).lower()
+      if '@' in arg:
+          arg = arg[2:-1]
+      server = bot.get_guild(ctx.guild.id)
+      members = server.members
+      player = None
+      for member in members:
+          if arg in member.name.lower():
+              player = member.name + '#' + member.discriminator
+              playerid = member.id
+          elif arg == str(member.id):
+              player = member.name + '#' + member.discriminator
+              playerid = member.id
+      if player == None:
+          return
+      nums = []
+      for _ in range(1):
+        num = random.randint(0, len(trivia_variables.topics) - 1)
+        while num in nums:
+          num = random.randint(0, len(trivia_variables.topics) - 1)
+        nums.append(num)
+      topics = []
+      ques_ans = []
+      for sel in nums:
+        topics.append(trivia_variables.topics[sel])
+      for topic in topics:
+        ques_ans.append(trivia_variables.ques_ans[topic])
+      print(topics)
+      print(ques_ans)
+      view = Trivia(ctx.author, player, topics, ques_ans)
+      await ctx.reply(view=view)
 
     bot.run(variables.token)

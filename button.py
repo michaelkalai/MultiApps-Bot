@@ -9,6 +9,7 @@ class Menu(discord.ui.View):
 
   @discord.ui.button(label="Send Message", style = discord.ButtonStyle.grey)
   async def menu1(self, interaction: discord.Interaction, button: discord.ui.Button):
+    print(interaction.user)
     await interaction.response.send_message("Hello You Clicked Me")
 
 # Testing a basic button
