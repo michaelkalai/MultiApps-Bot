@@ -723,15 +723,15 @@ def run_bot():
       server = bot.get_guild(ctx.guild.id)
       members = server.members
       player = None
+      # searches for challenged player in list of server members
       for member in members:
           if arg in member.name.lower():
               player = member.name + '#' + member.discriminator
-              playerid = member.id
           elif arg == str(member.id):
               player = member.name + '#' + member.discriminator
-              playerid = member.id
       if player == None:
           return
+      # gathers topics and associated questions to be used in game
       nums = []
       for _ in range(1):
         num = random.randint(0, len(trivia_variables.topics) - 1)
@@ -744,9 +744,10 @@ def run_bot():
         topics.append(trivia_variables.topics[sel])
       for topic in topics:
         ques_ans.append(trivia_variables.ques_ans[topic])
-      print(topics)
-      print(ques_ans)
+      for _ in range(3):
+        topics.append("yo mama")
       view = Trivia(ctx.author, player, topics, ques_ans)
+      await ctx.send(f"Topics are {topics[0]}, {topics[1]}, {topics[2]}, and {topics[3]}. {ctx.author} select your first question to begin.")
       await ctx.reply(view=view)
 
     bot.run(variables.token)
