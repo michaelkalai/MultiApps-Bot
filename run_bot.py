@@ -719,7 +719,7 @@ def run_bot():
 
               
     @bot.command()
-    async def trivia(ctx, args):
+    async def trivia(ctx, *args):
       arg = ''.join(args).lower()
       if '@' in arg:
           arg = arg[2:-1]
@@ -738,7 +738,7 @@ def run_bot():
         
       # gathers topics and associated questions to be used in game
       nums = []
-      for _ in range(2):
+      for _ in range(4):
         num = random.randint(0, len(trivia_variables.topics) - 1)
         while num in nums:
           num = random.randint(0, len(trivia_variables.topics) - 1)
@@ -749,8 +749,6 @@ def run_bot():
         topics.append(trivia_variables.topics[sel])
       for topic in topics:
         ques_ans.append(trivia_variables.ques_ans[topic])
-      for _ in range(2):
-        topics.append("yo mama")
 
       # displays buttons and embed text to discord
       view = Trivia(ctx.author, player, topics, ques_ans)
