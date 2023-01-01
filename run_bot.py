@@ -36,6 +36,7 @@ def run_bot():
 
     @bot.command()
     async def connect4(ctx, *args):
+        # changes arg into an id if '@' was used
         arg = ' '.join(args).lower()
         if '@' in arg:
             arg = arg[2:-1]
@@ -47,6 +48,7 @@ def run_bot():
             return str(
                 msg.author) == connect.user2 and msg.channel == ctx.channel
 
+        # seraches through server member list and gets both players
         con = True
         guild_id = ctx.guild.id
         server = bot.get_guild(guild_id)
@@ -67,13 +69,12 @@ def run_bot():
             await ctx.send(f'{arg} not found')
             return
 
+        # initializes game
         connect = Connect_Four(ctx, user1, user2, user1_id, user2_id)
         player = connect.user1
         chip = 'x'
         embed = connect.display_board(player)
         await ctx.send(embed=embed)
-        # await ctx.send(f'{player}\'s turn')
-        # await ctx.send('Type concede to surrender')
 
         while con == True:
             con_it = True
@@ -88,6 +89,7 @@ def run_bot():
             else:
                 continue
             col = msg.content
+            # determines column based or concession based on user input
             try:
                 if 0 < int(col) < 8:
                     col = int(col)
@@ -105,6 +107,7 @@ def run_bot():
                 else:
                     print('error')
                 con_it = False
+            # checks for space in column and inserts chip before displaying board
             if con_it == True:
                 if connect.has_space(col):
                     connect.insert_chip(chip, col)
@@ -113,6 +116,7 @@ def run_bot():
                     continue
                 embed = connect.display_board(player)
                 await ctx.send(embed=embed)
+                # checks for winner
                 if connect.check_winner(chip):
                     id = connect.user1_id if player == connect.user1 else connect.user2_id
                     await ctx.send(f'<@{id}> has won! :tada:')
@@ -122,7 +126,6 @@ def run_bot():
                     break
                 player = connect.user1 if player == connect.user2 else connect.user2
                 chip = 'x' if chip == 'o' else 'o'
-                # await ctx.send(f'{player}\'s turn')
 
     @bot.command()
     async def spin(ctx):
@@ -723,6 +726,7 @@ def run_bot():
       server = bot.get_guild(ctx.guild.id)
       members = server.members
       player = None
+      
       # searches for challenged player in list of server members
       for member in members:
           if arg in member.name.lower():
@@ -731,9 +735,10 @@ def run_bot():
               player = member.name + '#' + member.discriminator
       if player == None:
           return
+        
       # gathers topics and associated questions to be used in game
       nums = []
-      for _ in range(1):
+      for _ in range(2):
         num = random.randint(0, len(trivia_variables.topics) - 1)
         while num in nums:
           num = random.randint(0, len(trivia_variables.topics) - 1)
@@ -744,8 +749,10 @@ def run_bot():
         topics.append(trivia_variables.topics[sel])
       for topic in topics:
         ques_ans.append(trivia_variables.ques_ans[topic])
-      for _ in range(3):
+      for _ in range(2):
         topics.append("yo mama")
+
+      # displays buttons and embed text to discord
       view = Trivia(ctx.author, player, topics, ques_ans)
       await ctx.send(f"Topics are {topics[0]}, {topics[1]}, {topics[2]}, and {topics[3]}. {ctx.author} select your first question to begin.")
       await ctx.reply(view=view)

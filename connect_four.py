@@ -22,6 +22,7 @@ class Connect_Four():
       ['-', '-', '-', '-', '-', '-', '-']
     ]
 
+  # converts chips from backend into emojis for frontend
   def chip_to_cir(self, chip):
     if chip == 'x':
       return ':red_circle:'
@@ -29,7 +30,8 @@ class Connect_Four():
       return ':yellow_circle:'
     else:
       return ':white_circle:'
-  
+
+  # temporarily joins board together to display to user
   def display_board(self, player):
     con_board = copy.deepcopy(self.board)
     for i in range(self.rows):
@@ -49,7 +51,8 @@ class Connect_Four():
     embed = discord.Embed(color = 0xFF5733, description = "")
     embed.set_image(url='https://media1.tenor.com/images/5cadbe1c0b073aae7bca19306cc14d3e/tenor.gif?itemid=18423674')
     return embed
-  
+
+  # searches for the first open slot in a column to add a chip
   def insert_chip(self, chip, col):
     self.board.reverse()
     for row in self.board:
@@ -58,12 +61,14 @@ class Connect_Four():
         break
     self.board.reverse()
 
+  # checks for available space in a selected column
   def has_space(self, col):
     for row in range(self.rows):
       if self.board[row][col] == '-':
         return True
     return False
-  
+
+  # checks vertically for a winner
   def check_cols(self, chip):
     for col in range(self.cols):
         count = 0
@@ -76,6 +81,7 @@ class Connect_Four():
                 return True
     return False
 
+  # checks horizontally for a winner
   def check_rows(self, chip):
       for row in range(self.rows):
           count = 0
@@ -88,6 +94,7 @@ class Connect_Four():
                   count = 0
       return False
 
+  # checks diagonally for a winner
   def check_diagonals(self, chip):
       for k in range(0, self.cols - 3):
           for i in range(0, self.rows - 3):
@@ -103,6 +110,7 @@ class Connect_Four():
                       return True
                   row += 1
                   col += 1
+          # each for looop checks in a different diagnol direction
           for i in range(3, self.rows):
               count = 0
               row = i
@@ -118,10 +126,12 @@ class Connect_Four():
                       return True
       return False
 
+  # checks previous functions to check for a winner
   def check_winner(self, chip):
     if self.check_cols(chip) or self.check_rows(chip) or self.check_diagonals(chip):
       return True
 
+  # checks every row and column for an empty space
   def is_full(self):
     for row in self.board:
       for col in row:
