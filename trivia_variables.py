@@ -1,4 +1,4 @@
-topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels"]
+topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels", "Star Wars: Originals"]
 ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?", "Onyx", "Harvest", "Reach", "Earth", "B"], 
                      ["According to the Covenant\'s religion, what is The Great Journey?", "The journey to the Ark", "A journey across the galaxy", "A pilgrimage to other worlds", "An ascension to godhood", "D"],
                     ["What is the name given to the dishonored Covenant Elite?", "The Guardian", "The Arbiter", "The Devil", "The Wicked", "B"],
@@ -14,7 +14,11 @@ ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?",
           "Star Wars: Prequels": [["After Mace Windu and the other Jedi Masters confront Palpatine, he says 'I am...'", "unstoppable", "the Senate", "building an Empire", "the Sith Lord", "B"],
                                   ["What planet does 'Attack of the Clones' start on?", "Tatooine", "Coruscant", "Kamino", "Naboo", "B"],
                                   ["Who is the Clone Army cloned from?", "Greedo", "Din Djarin", "Jango Fett", "Bossk", "C"],
-                                  ["Which order from Palpatine brings down the Jedi?", "Order 33", "Order 44", "Order 55", "Order 66", "D"]]
+                                  ["Which order from Palpatine brings down the Jedi?", "Order 33", "Order 44", "Order 55", "Order 66", "D"]],
+          "Star Wars: Originals": [["What was Luke Skywalker's call sign during the Battle of Yavin?", "Red Five", "Gold Leader", "Red Leader", "Red Two", "A"],
+                                   ["What is the name of the giant, four-legged walkers used by the Empire during the Battle of Hoth?", "AT-ATs", "AT-STs", "AT-TEs", "TIE Fighters", "A"],
+                                   ["Which people found R2-D2 and C-3P0 roaming the Tatooine desert?", "Sand people", "Gamorreans", "Jawas", "Gungans", "C"],
+                                   ["What is the name of the ship that Han Solo and Chewbacca fly?", "Avenger", "Millennium Falcon", "Tydirium", "Rogue One", "B"]]
            
            
            

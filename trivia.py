@@ -271,9 +271,9 @@ class Trivia(discord.ui.View):
       else:
         self.wrong_answer = True
       self.answered += 1
+      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
       await interaction.response.edit_message(embed=self.emb([]))
       self.wrong_answer = False
-      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
 
   @discord.ui.button(label = "B", row = 4, style = discord.ButtonStyle.blurple)
   async def b(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -286,9 +286,9 @@ class Trivia(discord.ui.View):
       else:
         self.wrong_answer = True
       self.answered += 1
+      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
       await interaction.response.edit_message(embed=self.emb([]))
       self.wrong_answer = False
-      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
 
   @discord.ui.button(label = "C", row = 4, style = discord.ButtonStyle.blurple)
   async def c(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -301,9 +301,9 @@ class Trivia(discord.ui.View):
       else:
         self.wrong_answer = True
       self.answered += 1
+      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
       await interaction.response.edit_message(embed=self.emb([]))
       self.wrong_answer = False
-      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
 
   @discord.ui.button(label = "D", row = 4, style = discord.ButtonStyle.blurple)
   async def d(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -316,6 +316,6 @@ class Trivia(discord.ui.View):
       else:
         self.wrong_answer = True
       self.answered += 1
+      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
       await interaction.response.edit_message(embed=self.emb([]))
       self.wrong_answer = False
-      self.current_user = self.user2 if self.current_user == self.user1 else self.user1
