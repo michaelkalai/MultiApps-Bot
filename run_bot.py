@@ -13,6 +13,7 @@ from barber_finder import Barber_Finder
 from command_list import comml
 from trivia import Trivia
 import trivia_variables
+from tictactoe import Tictactoe
 
 def run_bot():
     intents = discord.Intents.all()
@@ -754,5 +755,26 @@ def run_bot():
       view = Trivia(ctx.author, player, topics, ques_ans)
       await ctx.send(f"Topics are {topics[0]}, {topics[1]}, {topics[2]}, and {topics[3]}. {ctx.author} select your first question to begin.")
       await ctx.reply(view=view)
+
+    @bot.command()
+    async def tic(ctx, *args):
+      arg = ''.join(args).lower()
+      if '@' in arg:
+          arg = arg[2:-1]
+      server = bot.get_guild(ctx.guild.id)
+      members = server.members
+      player = None
+      
+      # searches for challenged player in list of server members
+      for member in members:
+          if arg in member.name.lower():
+              player = member.name + '#' + member.discriminator
+          elif arg == str(member.id):
+              player = member.name + '#' + member.discriminator
+      if player == None:
+          return
+
+      view = Tictactoe(ctx.author, player)
+      await ctx.send(view=view)
 
     bot.run(variables.token)

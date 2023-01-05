@@ -1,4 +1,4 @@
-topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels", "Star Wars: Originals"]
+topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels", "Star Wars: Originals", "Star Wars: Sequels"]
 ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?", "Onyx", "Harvest", "Reach", "Earth", "B"], 
                      ["According to the Covenant\'s religion, what is The Great Journey?", "The journey to the Ark", "A journey across the galaxy", "A pilgrimage to other worlds", "An ascension to godhood", "D"],
                     ["What is the name given to the dishonored Covenant Elite?", "The Guardian", "The Arbiter", "The Devil", "The Wicked", "B"],
@@ -15,10 +15,15 @@ ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?",
                                   ["What planet does 'Attack of the Clones' start on?", "Tatooine", "Coruscant", "Kamino", "Naboo", "B"],
                                   ["Who is the Clone Army cloned from?", "Greedo", "Din Djarin", "Jango Fett", "Bossk", "C"],
                                   ["Which order from Palpatine brings down the Jedi?", "Order 33", "Order 44", "Order 55", "Order 66", "D"]],
-          "Star Wars: Originals": [["What was Luke Skywalker's call sign during the Battle of Yavin?", "Red Five", "Gold Leader", "Red Leader", "Red Two", "A"],
+          "Star Wars: Originals": [["What was Luke Skywalker\'s call sign during the Battle of Yavin?", "Red Five", "Gold Leader", "Red Leader", "Red Two", "A"],
                                    ["What is the name of the giant, four-legged walkers used by the Empire during the Battle of Hoth?", "AT-ATs", "AT-STs", "AT-TEs", "TIE Fighters", "A"],
-                                   ["Which people found R2-D2 and C-3P0 roaming the Tatooine desert?", "Sand people", "Gamorreans", "Jawas", "Gungans", "C"],
-                                   ["What is the name of the ship that Han Solo and Chewbacca fly?", "Avenger", "Millennium Falcon", "Tydirium", "Rogue One", "B"]]
+                                   ["Which people found R2-D2 and C-3P0 roaming the Tatooine desert?", "Tusken Raiders", "Gamorreans", "Jawas", "Gungans", "C"],
+                                   ["What is the name of the ship that Han Solo and Chewbacca fly?", "Avenger", "Millennium Falcon", "Tydirium", "Rogue One", "B"]],
+          "Star Wars: Sequels": [["In The Force Awakens, the New Republic\'s capital is on what planet?", "Endor", "Coruscant", "Exegol", "Hosnian Prime", "D"],
+                                 ["What are Leia\'s last words to Han?", "'Until tomorrow'", "'I love you'", "'Bring him home'", "'We'll always have each other'", "C"],
+                                 ["Who is the Supreme Leader in The Last Jedi?", "Kylo Ren", "General Hux", "General Pryde", "Snoke", "A"],
+                                 ["What do we see Rey use as a home in the barren Jakku desert?", "The capsule of a TIE Fighter", "An X-Wing Fighter", "An AT-AT walker", "Star Destroyer", "C"]],
+            
            
            
            
