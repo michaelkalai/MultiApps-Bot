@@ -1,4 +1,4 @@
-topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels", "Star Wars: Originals", "Star Wars: Sequels"]
+topics = ["Halo", "Skyrim", "Mass Effect", "Star Wars: Prequels", "Star Wars: Originals", "Star Wars: Sequels", "Dead by Daylight", "God of War"]
 ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?", "Onyx", "Harvest", "Reach", "Earth", "B"], 
                      ["According to the Covenant\'s religion, what is The Great Journey?", "The journey to the Ark", "A journey across the galaxy", "A pilgrimage to other worlds", "An ascension to godhood", "D"],
                     ["What is the name given to the dishonored Covenant Elite?", "The Guardian", "The Arbiter", "The Devil", "The Wicked", "B"],
@@ -23,6 +23,14 @@ ques_ans = {"Halo": [["On what planet did humans first encounter the Covenant?",
                                  ["What are Leia\'s last words to Han?", "'Until tomorrow'", "'I love you'", "'Bring him home'", "'We'll always have each other'", "C"],
                                  ["Who is the Supreme Leader in The Last Jedi?", "Kylo Ren", "General Hux", "General Pryde", "Snoke", "A"],
                                  ["What do we see Rey use as a home in the barren Jakku desert?", "The capsule of a TIE Fighter", "An X-Wing Fighter", "An AT-AT walker", "Star Destroyer", "C"]],
+          "Dead by Daylight": [["What hex makes it harder to fix a generator?", "The Third Seal", "No One Escapes Death", "Thrill of the Hunt", "Ruin", "D"],
+                               ["What is a perk that can make you escape from the Killers grasp?", "Decisive Strike", "Hope", "Diversion", "Left Behind", "A"],
+                               ["Which character has the ability to self heal?", "Claudette Morel", "Meg Thomas", "Jake Park", "Dwight Fairfield", "A"],
+                               ["What do you call the in-game currency used to progress by purchasing upgrades?", "Bloodmana", "Bloodpoints", "Bloodfuel", "Lifeblood", "B"]],
+          "God of War": [["When Kratos' son Atreus finds out he\'s a god, what does he say in response?", "'Will I live forever?'", "'Can I turn into an animal?'", "'Can I fly?'", "'Can I turn invisible?'", "B"],
+                         ["How are Kratos and Atreus able to travel between Realms?", "Kratos and Atreus step through a realm tear", "Vanir magic", "By using the Bifröst", "They travel via boat", "C"],
+                         ["What are his chain blades called in God of War: Ghost of Sparta?", "Blades of Olympus", "Blades of Chaos", "Blades of Athena", "Blades of Exile", "C"],
+                         ["Why is Kratos so pale?", "He's covered in the ashes of his dead family", "His weakness is sunlight", "He was locked away for a long time", "It was painted white during a ritual", "A"]]
             
            
            

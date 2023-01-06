@@ -13,16 +13,21 @@ class Tictactoe(discord.ui.View):
     self.game_over = False
     self.current_piece = "X"
     self.current_user = self.user1
-    time_game = False
+    self.tie = False
 
   def tie_game(self):
+    self.game_over = True
+    self.tie = True
     for row in self.board:
       for value in row:
         if value == "-":
+          self.game_over = False
+          self.tie = False
           return False
     return True
 
   def check_winner(self, piece):
+    self.game_over = True
     for row in self.board:
       if row.count(piece) == 3:
         return True
@@ -33,6 +38,7 @@ class Tictactoe(discord.ui.View):
       return True
     if piece == self.board[2][0] == self.board[1][1] == self.board[0][2]:
       return True
+    self.game_over = False
     return False
 
   def bot_check_col(self, col, piece):
@@ -50,7 +56,7 @@ class Tictactoe(discord.ui.View):
   def bot_check_row(self, row, piece):
     count = 0
     empty_space = False
-    for val in row:
+    for val in self.board[row]:
       if val == piece:
         count += 1
       elif val == "-":
@@ -148,29 +154,175 @@ class Tictactoe(discord.ui.View):
 
   def emb(self):
     embed = discord.Embed(color = 0xFF5733)
-    if self.game():
+    if self.tie:
       embed.add_field(name = "TicTacToe", value = "Tie Game")
     else:
       embed.add_field(name = "TicTacToe", value = f"{self.current_user} has won!")
+    return embed
+
+  def change_turns(self):
+    self.current_user = self.user2 if self.current_user == self.user1 else self.user1
+    self.current_piece = "O" if self.current_piece == "X" else "X"
 
   @discord.ui.button(label = "-", row = 0, style = discord.ButtonStyle.blurple,  custom_id = "00")
   async def zerozero(self, interaction: discord.Interaction, button: discord.ui.Button):
-    if not self.game_over:
+    if not self.game_over and self.board[0][0] == "-":
       self.insert_piece(0, 0, self.current_piece)
-      if self.check_winner(self.current_chip):
+      if self.check_winner(self.current_piece) or self.tie_game():
         await interaction.response.edit_message(view=self)
-        await interaction.followup(embed=self.emb())
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
       elif self.user2 == "Myriad":
-        self.current_user == self.user2
-        self.current_piece == "O"
+        self.change_turns()
         row, col = self.bot_turn()
         self.insert_piece(row, col, self.current_piece)
-        
-        
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
 
-    
-      
-      
-      
+  @discord.ui.button(label = "-", row = 0, style = discord.ButtonStyle.blurple,  custom_id = "01")
+  async def zeroone(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[0][1] == "-":
+      self.insert_piece(0, 1, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
 
+  @discord.ui.button(label = "-", row = 0, style = discord.ButtonStyle.blurple,  custom_id = "02")
+  async def zerotwo(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[0][2] == "-":
+      self.insert_piece(0, 2, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 1, style = discord.ButtonStyle.blurple,  custom_id = "10")
+  async def onezero(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[1][0] == "-":
+      self.insert_piece(1, 0, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 1, style = discord.ButtonStyle.blurple,  custom_id = "11")
+  async def oneone(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[1][1] == "-":
+      self.insert_piece(1, 1, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 1, style = discord.ButtonStyle.blurple,  custom_id = "12")
+  async def onetwo(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[1][2] == "-":
+      self.insert_piece(1, 2, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 2, style = discord.ButtonStyle.blurple,  custom_id = "20")
+  async def twozero(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[2][0] == "-":
+      self.insert_piece(2, 0, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 2, style = discord.ButtonStyle.blurple,  custom_id = "21")
+  async def twoone(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[2][1] == "-":
+      self.insert_piece(2, 1, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
+
+  @discord.ui.button(label = "-", row = 2, style = discord.ButtonStyle.blurple,  custom_id = "22")
+  async def twotwo(self, interaction: discord.Interaction, button: discord.ui.Button):
+    if not self.game_over and self.board[2][2] == "-":
+      self.insert_piece(2, 2, self.current_piece)
+      if self.check_winner(self.current_piece) or self.tie_game():
+        await interaction.response.edit_message(view=self)
+        await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      elif self.user2 == "Myriad":
+        self.change_turns()
+        row, col = self.bot_turn()
+        self.insert_piece(row, col, self.current_piece)
+        await interaction.response.edit_message(view=self)
+        if self.check_winner(self.current_piece) or self.tie_game():
+          await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      else:
+        await interaction.response.edit_message(view=self)
+      self.change_turns()
   

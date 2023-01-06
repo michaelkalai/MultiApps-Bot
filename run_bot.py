@@ -771,6 +771,8 @@ def run_bot():
               player = member.name + '#' + member.discriminator
           elif arg == str(member.id):
               player = member.name + '#' + member.discriminator
+      if player == "Myriad#0366":
+        player = "Myriad"
       if player == None:
           return
 
