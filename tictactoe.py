@@ -41,6 +41,7 @@ class Tictactoe(discord.ui.View):
     self.game_over = False
     return False
 
+  # Check functions are used to determine if the bot has any winning moves or must or if the player needs to be blocked anywhere
   def bot_check_col(self, col, piece):
     count = 0
     empty_space = False
@@ -95,6 +96,7 @@ class Tictactoe(discord.ui.View):
     if count == 2 and empty_space:
       return True
 
+  # Insert functions finds the first open slot in the appropriate location for the bot turn
   def insert_piece_row(self, row):
     for col in range(3):
       if self.board[row][col] == "-":
@@ -118,7 +120,9 @@ class Tictactoe(discord.ui.View):
     else:
       return 0, 2
 
+  # Returns the index of bot selection
   def bot_turn(self):
+    # Checks for any winning moves the bot has
     for i in range(3):
       if self.bot_check_row(i, "O"):
         return i, self.insert_piece_row(i)
@@ -129,7 +133,8 @@ class Tictactoe(discord.ui.View):
       return self.insert_piece_diagonal1()
     elif self.bot_check_diagonal2("O"):
       return self.insert_piece_diagonal2()
-    
+
+    # Checks for any winning moves the player has
     for i in range(3):
       if self.bot_check_row(i, "X"):
         return i, self.insert_piece_row(i)
@@ -141,12 +146,14 @@ class Tictactoe(discord.ui.View):
     elif self.bot_check_diagonal2("X"):
       return self.insert_piece_diagonal2()
 
+    # Random selects a position for the bot to select, with the middle square taking priority
     row, col = 1, 1
     while self.board[row][col] != "-":
       row = random.randint(0, 2)
       col = random.randint(0, 2)
     return row, col
 
+  # Changes button label based on custom id
   def insert_piece(self, row, col, piece):
     self.board[row][col] = piece
     button1 = [x for x in self.children if x.custom_id == str(row) + str(col)][0]
@@ -166,11 +173,13 @@ class Tictactoe(discord.ui.View):
 
   @discord.ui.button(label = "-", row = 0, style = discord.ButtonStyle.blurple,  custom_id = "00")
   async def zerozero(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # Ensures interaction only occurs if the game is ongoing and the space is available (Same for all buttons)
     if not self.game_over and self.board[0][0] == "-":
       self.insert_piece(0, 0, self.current_piece)
       if self.check_winner(self.current_piece) or self.tie_game():
         await interaction.response.edit_message(view=self)
         await interaction.followup.edit_message(embed=self.emb(), message_id=interaction.message.id)
+      # Carries out bot turn if other player is Myriad (Same for all buttons)
       elif self.user2 == "Myriad":
         self.change_turns()
         row, col = self.bot_turn()

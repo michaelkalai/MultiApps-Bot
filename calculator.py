@@ -11,7 +11,8 @@ class Calculator(discord.ui.View):
     self.selected = ""
     self.type = "deg"
     self.answer = "0"
-  
+
+  # calculator screen
   def emb(self):
     dg_rd = "ᵈᵉᵍ" if self.type == "deg" else "ʳᵃᵈ"
     embed = discord.Embed(color = 0xFF5733)
@@ -23,6 +24,7 @@ class Calculator(discord.ui.View):
       embed.add_field(name = "Calculator", value = F"{dg_rd}\n{self.value1} {self.operation} {self.value2}")
     return embed
 
+  # makes changes to values displayed based on button selection
   def change_val(self):
     if self.selected == "π":
       if self.operation == "" and "π" not in self.value1 and self.value1[-1] != ".":
@@ -54,6 +56,7 @@ class Calculator(discord.ui.View):
     else:
       self.operation = self.selected
 
+  # changes pi symbol based on calculator setting of degrees/radians
   def pi_con(self, value):
     if self.type == "deg":
       if "π" in self.value1 and len(self.value1) > 1:
@@ -78,12 +81,14 @@ class Calculator(discord.ui.View):
 
   @discord.ui.button(label = "d/r", row = 0, style = discord.ButtonStyle.red)
   async def deg_rad(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # switches between degrees and radians
     self.type = "deg" if self.type == "rad" else "rad"
     embed = self.emb()
     await interaction.response.edit_message(embed=embed)
   
   @discord.ui.button(label = "Sin", row = 1, style = discord.ButtonStyle.red)
   async def sin(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # conducts trig operation (same structure for all trig buttons)
     if self.operation == "" and self.value2 == "":
       self.answer = round(math.sin(self.pi_con(self.value1)), 10)
       if float(self.answer) == int(self.answer):
@@ -207,6 +212,7 @@ class Calculator(discord.ui.View):
 
   @discord.ui.button(label = "-/+", row = 0, style = discord.ButtonStyle.blurple)
   async def neg_pos(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # switches value between positive and negative
     if self.operation == "":
       if float(self.value1) > 0 or float(self.value1) < 0:
         if "-" in self.value1:
@@ -281,6 +287,7 @@ class Calculator(discord.ui.View):
 
   @discord.ui.button(label = "=", row = 4, style = discord.ButtonStyle.green)
   async def equal(self, interaction: discord.Interaction, button: discord.ui.Button):
+    # conducts operation based on self.operation and displays answer
     try:
       if self.operation != "":
         if "π" in self.value1:
