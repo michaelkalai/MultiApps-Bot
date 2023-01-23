@@ -1,3 +1,4 @@
+import os
 import discord
 from discord.ext import commands
 import random
@@ -14,6 +15,11 @@ from command_list import comml
 from trivia import Trivia
 import trivia_variables
 from tictactoe import Tictactoe
+from helper_functions import get_player
+from datetime import datetime
+import mysql.connector
+token = os.environ['token']
+
 
 def run_bot():
     intents = discord.Intents.all()
@@ -37,11 +43,6 @@ def run_bot():
 
     @bot.command()
     async def connect4(ctx, *args):
-        # changes arg into an id if '@' was used
-        arg = ' '.join(args).lower()
-        if '@' in arg:
-            arg = arg[2:-1]
-
         def check_1(msg):
             return msg.author == connect.user1 and msg.channel == ctx.channel
 
@@ -51,23 +52,11 @@ def run_bot():
 
         # seraches through server member list and gets both players
         con = True
-        guild_id = ctx.guild.id
-        server = bot.get_guild(guild_id)
-        members = server.members
         user1 = ctx.author
         user1_id = str(ctx.author.id)
         user2 = ''
-        for member in members:
-            if arg in member.name.lower():
-                user2 = member.name + '#' + member.discriminator
-                user2_id = str(member.id)
-                break
-            elif arg == str(member.id):
-                user2 = member.name + '#' + member.discriminator
-                user2_id = str(member.id)
-                break
-        if len(user2) < 1:
-            await ctx.send(f'{arg} not found')
+        user2, user2_id = get_player(bot, args, ctx)
+        if user2 == None:
             return
 
         # initializes game
@@ -105,8 +94,6 @@ def run_bot():
                     player = connect.user1 if player == connect.user2 else connect.user2
                     await ctx.send(f'<@{id}> has won! :tada:')
                     con = False
-                else:
-                    print('error')
                 con_it = False
             # checks for space in column and inserts chip before displaying board
             if con_it == True:
@@ -175,7 +162,6 @@ def run_bot():
         else:
             selection = random.randint(0, len(items) - 1)
             await ctx.send('Spinning...')
-            time.sleep(2)
             await ctx.send(f"{items[selection]}!")
 
     #Rock paper scissors
@@ -420,175 +406,142 @@ def run_bot():
 
     @bot.command()
     async def commandlist(ctx):
-      embed = discord.Embed(title="Myriad Command List",
+        embed = discord.Embed(title="Myriad Command List",
                               url="",
                               description="",
                               color=0xFF5733)
-      embed.set_author(name=ctx.author.display_name,
+        embed.set_author(name=ctx.author.display_name,
                          url="https://realdrewdata.medium.com/",
                          icon_url=ctx.author.avatar.url)
-      embed.add_field(
-            name ="Command Categories:",
-            value =
-            "Games\n" + "" + "Math\n" + "Gym\n" + "VC Commands\n" + "Tools\n" + "Other\n" + "All Commands"
-        )
-      embed.set_footer(text="This is a footer for the embed.")
-      await ctx.send(embed=embed)
+        embed.add_field(name="Command Categories:",
+                        value="Games\n" + "" + "Math\n" + "Gym\n" +
+                        "VC Commands\n" + "Tools\n" + "Other\n" +
+                        "All Commands")
+        embed.set_footer(text="This is a footer for the embed.")
+        await ctx.send(embed=embed)
 
-      await ctx.send("Please select one of the categories listed above:")
-      def check(msg):
-        return msg.author == ctx.author and msg.channel == ctx.channel
-      while True:
-        msg = await bot.wait_for("message", check=check)
-        if msg.content == "Games":
-          c = 0
-          break
-        if msg.content == "Math":
-          c = 1
-          break
-        if msg.content == "Gym":
-          c = 2
-          break
-        if msg.content == "VC Commands":
-          c = 3
-          break
-        if msg.content == "Tools":
-          c = 4
-          break
-        if msg.content == "Other":
-          c = 5
-          break
-        if msg.content == "All Commands":
-          c = 6
-          break
+        await ctx.send("Please select one of the categories listed above:")
 
-      while True:
-        if c == 0:
-          embed = discord.Embed(title="Myriad: Games",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[0],
-              inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 1:
-          embed = discord.Embed(title="Myriad: Math",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[1],
-              inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 2:
-          embed = discord.Embed(title="Myriad: Gym",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[2],
-              inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 3:
-          embed = discord.Embed(title="Myriad: VC Commands",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[3],
-              inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 4:
-          embed = discord.Embed(title="Myriad: Tools",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[4],
-                inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 5:
-          embed = discord.Embed(title="Myriad: Other",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Commands:",
-              value=comml[5],
-                inline=False)
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
-        if c == 6:
-          embed = discord.Embed(title="Myriad: All Commands",
-                              url="",
-                              description="",
-                              color=0xFF5733)
-          embed.set_author(name=ctx.author.display_name,
-                         url="https://realdrewdata.medium.com/",
-                         icon_url=ctx.author.avatar.url)
-          embed.add_field(
-              name="Games:",
-              value=comml[0],
-                inline=False)
-          embed.add_field(
-              name="Math:",
-              value=comml[1],
-                inline=False)
-          embed.add_field(
-              name="Gym:",
-              value=comml[2],
-                inline=False)
-          embed.add_field(
-              name="VC Commands:",
-              value=comml[3],
-                inline=False)
-          embed.add_field(
-              name="Tools:",
-              value=comml[4],
-                inline=False)
-          embed.add_field(
-              name="Other:",
-              value=comml[5],
-                inline=False)
-          
-          embed.set_footer(text="This is a footer for the embed.")
-          await ctx.send(embed=embed)
-          break
+        def check(msg):
+            return msg.author == ctx.author and msg.channel == ctx.channel
+
+        while True:
+            msg = await bot.wait_for("message", check=check)
+            if msg.content == "Games":
+                c = 0
+                break
+            if msg.content == "Math":
+                c = 1
+                break
+            if msg.content == "Gym":
+                c = 2
+                break
+            if msg.content == "VC Commands":
+                c = 3
+                break
+            if msg.content == "Tools":
+                c = 4
+                break
+            if msg.content == "Other":
+                c = 5
+                break
+            if msg.content == "All Commands":
+                c = 6
+                break
+
+        while True:
+            if c == 0:
+                embed = discord.Embed(title="Myriad: Games",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[0], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 1:
+                embed = discord.Embed(title="Myriad: Math",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[1], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 2:
+                embed = discord.Embed(title="Myriad: Gym",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[2], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 3:
+                embed = discord.Embed(title="Myriad: VC Commands",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[3], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 4:
+                embed = discord.Embed(title="Myriad: Tools",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[4], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 5:
+                embed = discord.Embed(title="Myriad: Other",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Commands:", value=comml[5], inline=False)
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
+            if c == 6:
+                embed = discord.Embed(title="Myriad: All Commands",
+                                      url="",
+                                      description="",
+                                      color=0xFF5733)
+                embed.set_author(name=ctx.author.display_name,
+                                 url="https://realdrewdata.medium.com/",
+                                 icon_url=ctx.author.avatar.url)
+                embed.add_field(name="Games:", value=comml[0], inline=False)
+                embed.add_field(name="Math:", value=comml[1], inline=False)
+                embed.add_field(name="Gym:", value=comml[2], inline=False)
+                embed.add_field(name="VC Commands:",
+                                value=comml[3],
+                                inline=False)
+                embed.add_field(name="Tools:", value=comml[4], inline=False)
+                embed.add_field(name="Other:", value=comml[5], inline=False)
+
+                embed.set_footer(text="This is a footer for the embed.")
+                await ctx.send(embed=embed)
+                break
 
     @bot.command()
     async def menu(ctx):
@@ -613,39 +566,42 @@ def run_bot():
     @bot.command()
     async def protein(ctx):
         await ctx.send("Please type in M or F if you're male or female:")
+
         def check(msg):
             return msg.author == ctx.author and msg.channel == ctx.channel
+
         while True:
-          msg = await bot.wait_for("message", check=check)
-          g = msg. content
-          if g == "M":
-            proteindec = 0.75
-            break
-          if g == "m":
-            proteindec = 0.75
-            break
-          if g == "F":
-            proteindec = 0.83
-            break
-          if g == "f":
-            proteindec = 0.83
-            break
-        
+            msg = await bot.wait_for("message", check=check)
+            g = msg.content
+            if g == "M":
+                proteindec = 0.75
+                break
+            if g == "m":
+                proteindec = 0.75
+                break
+            if g == "F":
+                proteindec = 0.83
+                break
+            if g == "f":
+                proteindec = 0.83
+                break
+
         await ctx.send("Please type in your body weight:")
         while True:
-          msg = await bot.wait_for("message", check=check)
-          body_weight = msg.content
-  
-          if float(body_weight) < 0:
-              await ctx.send(
-                  "Negatives numbers aren't applicable, please type in your body weight:"
-              )
-  
-          elif float(body_weight) > 0:
-            bodyweight = float(body_weight) * proteindec
-            await ctx.send(
-                f"Your daily intake should be {round(bodyweight)} grams of protein for muscle building")
-            break
+            msg = await bot.wait_for("message", check=check)
+            body_weight = msg.content
+
+            if float(body_weight) < 0:
+                await ctx.send(
+                    "Negatives numbers aren't applicable, please type in your body weight:"
+                )
+
+            elif float(body_weight) > 0:
+                bodyweight = float(body_weight) * proteindec
+                await ctx.send(
+                    f"Your daily intake should be {round(bodyweight)} grams of protein for muscle building"
+                )
+                break
 
     @bot.command()
     async def hangman(ctx, args):
@@ -660,19 +616,7 @@ def run_bot():
                 ) and msg.content.lower() not in hangman.used_letters
 
         # Determines the player in the server being challenged to the game
-        arg = ''.join(args).lower()
-        if '@' in arg:
-            arg = arg[2:-1]
-        server = bot.get_guild(ctx.guild.id)
-        members = server.members
-        player = None
-        for member in members:
-            if arg in member.name.lower():
-                player = member.name + '#' + member.discriminator
-                playerid = member.id
-            elif arg == str(member.id):
-                player = member.name + '#' + member.discriminator
-                playerid = member.id
+        player, playerid = get_player(bot, args, ctx)
         if player == None:
             return
 
@@ -716,67 +660,61 @@ def run_bot():
                 await ctx.send(
                     f"Out of lives! The correct word/phrase was \"{word}\"")
                 break
-        
 
-              
     @bot.command()
     async def trivia(ctx, *args):
-      arg = ''.join(args).lower()
-      if '@' in arg:
-          arg = arg[2:-1]
-      server = bot.get_guild(ctx.guild.id)
-      members = server.members
-      player = None
-      
-      # searches for challenged player in list of server members
-      for member in members:
-          if arg in member.name.lower():
-              player = member.name + '#' + member.discriminator
-          elif arg == str(member.id):
-              player = member.name + '#' + member.discriminator
-      if player == None:
-          return
-        
-      # gathers topics and associated questions to be used in game
-      nums = []
-      for _ in range(4):
-        num = random.randint(0, len(trivia_variables.topics) - 1)
-        while num in nums:
-          num = random.randint(0, len(trivia_variables.topics) - 1)
-        nums.append(num)
-      topics = []
-      ques_ans = []
-      for sel in nums:
-        topics.append(trivia_variables.topics[sel])
-      for topic in topics:
-        ques_ans.append(trivia_variables.ques_ans[topic])
+        player, playerid = get_player(bot, args, ctx)
+        if player == None:
+            return
 
-      # displays buttons and embed text to discord
-      view = Trivia(ctx.author, player, topics, ques_ans)
-      await ctx.send(f"Topics are {topics[0]}, {topics[1]}, {topics[2]}, and {topics[3]}. {ctx.author} select your first question to begin.")
-      await ctx.reply(view=view)
+        # gathers topics and associated questions to be used in game
+        nums = []
+        for _ in range(4):
+            num = random.randint(0, len(trivia_variables.topics) - 1)
+            while num in nums:
+                num = random.randint(0, len(trivia_variables.topics) - 1)
+            nums.append(num)
+        topics = []
+        ques_ans = []
+        for sel in nums:
+            topics.append(trivia_variables.topics[sel])
+        for topic in topics:
+            ques_ans.append(trivia_variables.ques_ans[topic])
+
+        # displays buttons and embed text to discord
+        view = Trivia(ctx.author, player, topics, ques_ans)
+        await ctx.send(
+            f"Topics are {topics[0]}, {topics[1]}, {topics[2]}, and {topics[3]}. {ctx.author} select your first question to begin."
+        )
+        await ctx.reply(view=view)
 
     @bot.command()
     async def tic(ctx, *args):
-      arg = ''.join(args).lower()
-      if '@' in arg:
-          arg = arg[2:-1]
-      server = bot.get_guild(ctx.guild.id)
-      members = server.members
-      player = None
-      
-      # searches for challenged player in list of server members
-      for member in members:
-          if arg in member.name.lower():
-              player = member.name + '#' + member.discriminator
-          elif arg == str(member.id):
-              player = member.name + '#' + member.discriminator
-      if player == "Myriad#0366":
-        player = "Myriad"
-      if player == None:
-          return
+        player, playerid = get_player(bot, args, ctx)
+        if player == "Myriad#0366":
+            player = "Myriad"
+        if player == None:
+            return
 
-      view = Tictactoe(ctx.author, player)
-      await ctx.send(view=view)
+        view = Tictactoe(ctx.author, player)
+        await ctx.send(view=view)
 
-    bot.run(variables.token)
+    '''
+    @bot.command()
+    async def timer(ctx, *args):
+        validUnits = ["min", "sec", "hrs"]
+        if (not (args[1] in validUnits)):
+            print("invalid Unit Selection")
+            return
+        num = 0
+        try:
+            print(args[0])
+            num = (int(args[0]))
+        except:
+            print("An exception occurred")
+            return
+        # bro(num)
+        
+        await ctx.send('Omar\'s barber')
+    '''
+    bot.run(token)

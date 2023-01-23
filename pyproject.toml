@@ -24,6 +24,7 @@ edx-opaque-keys = "^2.3.0"
 django-ffmpeg = "^0.1.6"
 lavalink = "^4.0.4"
 teapot = "^2.5"
+mysql-connector-python = "^8.0.32"
 
 [tool.poetry.dev-dependencies]
 

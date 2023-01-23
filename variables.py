@@ -27,3 +27,4 @@ gymtips = ("When creating a set, test out the number of reps and weight",
 
 
 
+# my_secret = os.environ['mama']
