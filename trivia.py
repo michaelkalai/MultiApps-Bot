@@ -90,6 +90,7 @@ class Trivia(discord.ui.View):
       button.disabled = True
       await interaction.response.edit_message(view=self)
       await interaction.followup.edit_message(embed=self.emb(self.quest_ans[0][2]), message_id=interaction.message.id)
+    
 
   @discord.ui.button(label = "250", row = 3, style = discord.ButtonStyle.blurple)
   async def col_one_twofifty(self, interaction: discord.Interaction, button: discord.ui.Button):

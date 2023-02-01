@@ -2,7 +2,6 @@ import os
 import discord
 from discord.ext import commands
 import random
-import pygame
 import time
 import datetime
 import variables
@@ -16,9 +15,14 @@ from trivia import Trivia
 import trivia_variables
 from tictactoe import Tictactoe
 from helper_functions import get_player
+from helper_functions import add_user
 from datetime import datetime
+from blackjack import Blackjack
 import mysql.connector
+
 token = os.environ['token']
+sqltoken = os.environ['sqltoken']
+ip = os.environ['ip']
 
 
 def run_bot():
@@ -28,7 +32,35 @@ def run_bot():
 
     @bot.event
     async def on_ready():
+        cnx = mysql.connector.connection.MySQLConnection(
+            user='root',
+            password=sqltoken,
+            host=ip,
+            database='Myriad')
+        cursor = cnx.cursor()
+        query = ("SELECT userid FROM Users")
+        cursor.execute(query)
+        ids = set([])
+        for (userid) in cursor:
+            ids.add(userid[0])
+        servers = len(bot.guilds)
+        members = 0
+        for guild in bot.guilds:
+            members += guild.member_count - 1
+            for member in guild.members:
+                print(member.id)
+                if str(member.id) not in ids:
+                    user_name = member.name + "#" + member.discriminator
+                    print(user_name)
+                    query = ('INSERT INTO Users (name, userid, money) VALUES ("' + user_name + '", "' + str(member.id) + '", 1000);')
+                    # print(query)
+                    cursor.execute(query)
+        print(f"Number of servers: {servers}")
+        print(f"Total Users: {members}")
         print(f"{bot.user} is online")
+        cnx.commit()
+        cursor.close()
+        cnx.close()
 
     @bot.command()
     async def hello(ctx):
@@ -345,40 +377,6 @@ def run_bot():
     #The bracket generator (currently version 1)
 
     # #Bracket generator
-    '''
-  @bot.command()
-  async def genBracket(ctx, timer=60):
-
-      #this is phase 1, where the bot will ask for input
-      await ctx.send("Bracket created! React with :white_check_mark: to enter into the bracket!")
-      #too lazy to convert to minutes hours and day
-      await ctx.send("Entry will end in " + str(timer) + " seconds!")
-
-      for x in range(timer):
-        def check(msg):
-          return msg.author == ctx.author and msg.channel == ctx.channel
-        try:
-          msg = await bot.wait_for("message", check=check, timeout=1)
-          if msg.content == "Cancel":
-            await ctx.send("yo stank ahh canceled")
-            return
-        except:
-          pass
-        #time.sleep(1)
-      #
-      #
-      #
-      #this is phase 2, where the bot will collect the inputs
-      await ctx.send("Time's up, omar ugly as hell")
-      
-      #print(msg.content)
-      
-      
-      
-
-  #'''
-    #
-    #VC Person Picker
     @bot.command()
     async def vcPicker(ctx, *, given_name=None):
         for channel in ctx.guild.channels:
@@ -699,6 +697,11 @@ def run_bot():
         view = Tictactoe(ctx.author, player)
         await ctx.send(view=view)
 
+    @bot.command()
+    async def blackjack(ctx):
+      view = Blackjack()
+      await ctx.send(view=view)
+      
     '''
     @bot.command()
     async def timer(ctx, *args):
@@ -717,4 +720,5 @@ def run_bot():
         
         await ctx.send('Omar\'s barber')
     '''
+
     bot.run(token)
