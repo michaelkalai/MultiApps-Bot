@@ -1,3 +1,10 @@
+import os
+import mysql.connector
+
+token = os.environ['token']
+sqltoken = os.environ['sqltoken']
+ip = os.environ['ip']
+
 def get_player(bot, args, ctx):
   player = None
   playerid = None
@@ -20,7 +27,33 @@ def get_player(bot, args, ctx):
           playerid = member.id
   return player, playerid
 
-def add_user():
-  return ("INSERT INTO Users "
-         "(name, id, money)"
-         "VALUES (%s, %d, %f)")
+def add_user(cursor, user_name, user_id):
+    query = ('INSERT INTO Users (name, userid, money) VALUES ("' + user_name + '", "' + str(user_id) + '", 1000);')
+    cursor.execute(query)
+
+def connectsql():
+    cnx = mysql.connector.connection.MySQLConnection(
+                user='root',
+                password=sqltoken,
+                host=ip,
+                database='Myriad')
+    cursor = cnx.cursor()
+    return cnx, cursor
+
+def disconnectsql(cnx, cursor):
+    cnx.commit()
+    cursor.close()
+    cnx.close()
+
+def check_for_user(cursor, id):
+    bool = False
+    cursor.execute("SELECT userid FROM Users;")
+    for userid in cursor:
+      if userid[0] == str(id):
+        bool = True
+    return bool
+
+def get_money(cursor, id):
+    cursor.execute(f"SELECT money FROM Users where userid = {id};")
+    for money in cursor:
+      return money[0]

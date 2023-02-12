@@ -12,4 +12,10 @@ class Menu(discord.ui.View):
     async def menu1(self, interaction: discord.Interaction,
                     button: discord.ui.Button):
         print(interaction.user)
-        await interaction.response.send_message("Hello You Clicked Me")
+        await interaction.response.send_message("Hello You chose to Hold")
+
+    @discord.ui.button(label="Hit", style=discord.ButtonStyle.blurple)
+    async def menu2(self, interaction: discord.Interaction,
+                    button: discord.ui.Button):
+        print(interaction.user)
+        await interaction.response.send_message("You chose to Hit")

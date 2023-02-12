@@ -18,7 +18,10 @@ from helper_functions import get_player
 from helper_functions import add_user
 from datetime import datetime
 from blackjack import Blackjack
-import mysql.connector
+from helper_functions import connectsql
+from helper_functions import disconnectsql
+from helper_functions import check_for_user
+from helper_functions import get_money
 
 token = os.environ['token']
 sqltoken = os.environ['sqltoken']
@@ -28,16 +31,10 @@ ip = os.environ['ip']
 def run_bot():
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix='$', intents=intents)
-    # Barber_Finder.echo()
 
     @bot.event
     async def on_ready():
-        cnx = mysql.connector.connection.MySQLConnection(
-            user='root',
-            password=sqltoken,
-            host=ip,
-            database='Myriad')
-        cursor = cnx.cursor()
+        cnx, cursor = connectsql()
         query = ("SELECT userid FROM Users")
         cursor.execute(query)
         ids = set([])
@@ -48,16 +45,13 @@ def run_bot():
         for guild in bot.guilds:
             members += guild.member_count - 1
             for member in guild.members:
-                print(member.id)
                 if str(member.id) not in ids:
                     user_name = member.name + "#" + member.discriminator
-                    print(user_name)
-                    query = ('INSERT INTO Users (name, userid, money) VALUES ("' + user_name + '", "' + str(member.id) + '", 1000);')
-                    # print(query)
-                    cursor.execute(query)
+                    add_user(cursor, user_name, member.id)
         print(f"Number of servers: {servers}")
         print(f"Total Users: {members}")
         print(f"{bot.user} is online")
+        # disconnectsql(cnx, cursor)
         cnx.commit()
         cursor.close()
         cnx.close()
@@ -698,8 +692,22 @@ def run_bot():
         await ctx.send(view=view)
 
     @bot.command()
-    async def blackjack(ctx):
-      view = Blackjack()
+    async def blackjack(ctx, arg):
+      cnx, cursor = connectsql()
+      if not check_for_user(cursor, ctx.author.id):
+        add_user(cursor, ctx.author.name + "#" + ctx.author.discriminator, ctx.author.id)
+      try:
+        bet = int(arg)
+      except:
+        await ctx.send("Invalid Bet")
+        return
+      if get_money(cursor, ctx.author.id) < bet:
+        await ctx.send("Not Enough Money")
+        disconnectsql(cnx, cursor)
+        return
+      disconnectsql(cnx, cursor)
+      
+      view = Blackjack(bet, ctx.author.name + ctx.author.discriminator)
       await ctx.send(view=view)
       
     '''
